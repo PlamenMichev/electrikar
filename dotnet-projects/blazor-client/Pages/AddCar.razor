@@ -1,0 +1,166 @@
+@page "/add-car"
+@using shared.Enums
+@using shared.Models
+@inject HttpClient Http
+@inject NavigationManager NavManager
+
+<PageTitle>Add Car</PageTitle>
+
+<form @onsubmit="Submit" class="row">
+  <div class="form-group col-xs-12 col-md-6">
+    <label for="regNumberInput">Registration Number</label>
+    <input @bind="regNumberInput" class="@(!string.IsNullOrEmpty(regNumberInputErrorMessage)? "is-invalid form-control" : "form-control")" placeholder="E1977MK" id="regNumberInput">
+    <div class="@(!string.IsNullOrEmpty(regNumberInputErrorMessage)? "invalid-feedback" : "feedback")">
+        @(regNumberInputErrorMessage ?? "This field should be unique for the whole system")
+    </div>
+  </div>
+
+  <div class="form-group col-xs-12 col-md-6 mb-4">
+    <label for="colorInput">Color</label>
+    <select @bind="colorInput" class="form-control" id="colorInput">
+        @foreach (var color in Enum.GetValues(typeof(Color)))
+        {
+            <option value="@color">@color</option>
+        }
+    </select>
+  </div>
+
+  <div class="form-group col-xs-12 col-md-6 mb-4">
+    <label for="makeInput">Make</label>
+    <select @bind="makeInput" class="form-control" id="makeInput">
+        @foreach (var make in Enum.GetValues(typeof(Make)))
+        {
+            <option value="@make">@make</option>
+        }
+    </select>
+  </div>
+
+  <div class="form-group col-xs-12 col-md-6">
+    <label for="modelInput">Model</label>
+    <select @bind="modelInput" class="form-control" id="modelInput">
+        @foreach (var model in new Model(makeInput).Models)
+        {
+            <option value="@model">@ModelsDisplayNames.GetDisplayName(model)</option>
+        }
+    </select>
+  </div>
+
+  <div class="form-group col-xs-12 col-md-6">
+    <label for="carTypeInput">Type</label>
+    <select @bind="carTypeInput" class="form-control" id="carTypeInput">
+        @foreach (var carType in Enum.GetValues(typeof(CarType)))
+        {
+            <option value="@carType">@carType</option>
+        }
+    </select>
+  </div>
+
+   <div class="form-group col-xs-12 col-md-6 d-flex flex-column justify-content-center">
+    <label for="fileInput">Example file input</label>
+    <InputFile id="fileInput" class="form-control-file" OnChange="@LoadFile" accept=".jpg, .jpeg, .png" />
+  </div>
+
+  <div class="col-md-6" />
+
+    <div class="col-xs-12 col-md-6 mt-2">
+        @if (isFileLoading) {
+            <div style="display: flex; height: 200px; width: 200px; align-items: center; justify-content: center;">
+                <div class="spinner-border text-primary" role="status" />
+            </div>
+        }
+        else {
+            <div>
+                <img class="block" src="@FileBase64" height="200px" width="200px" />
+            </div>
+        }
+    </div>
+
+    <div class="row">
+        <div class="col">
+            <div class="text-end">
+                <button disabled="@isSubmitting"  type="submit" class="btn btn-primary mt-2 pull-right" style="width: 100px">
+                    @if (isSubmitting) 
+                    {
+                        <div class="spinner-border text-white" role="status" />
+                    }
+                    else {
+                        <span>Submit</span>
+                    }
+                    </button>
+            </div>
+        </div>
+    </div>
+</form>
+
+
+@code {
+    private string? regNumberInput;
+    private Color colorInput;
+    private Make makeInput;
+    private CarModel modelInput;
+    private CarType carTypeInput;
+    private byte[] fileInput;
+    private string? FileBase64;
+    private bool isFileLoading;
+    private string regNumberInputErrorMessage;
+    private bool isSubmitting;
+
+    private async Task Submit()
+    {   
+        if (isSubmitting) return;
+
+        isSubmitting = true;
+        var isFormValid = ValidateInputs();
+        if (!isFormValid)
+        {
+            isSubmitting = false;
+            return;
+        } 
+
+        var car = new Car
+        {
+            RegistrationNumber = regNumberInput ?? string.Empty,
+            Color = colorInput,
+            Make = makeInput,
+            Model = modelInput,
+            Type = carTypeInput,
+            ImageByteArray = fileInput,
+        };
+
+        var serverUrl = "http://localhost:5098";
+        await Http.PostAsJsonAsync($"{serverUrl}/cars", car);
+        isSubmitting = false;
+        NavManager.NavigateTo("/cars-list?car-added=true");
+    }
+
+    private async Task LoadFile(InputFileChangeEventArgs e) { 
+        isFileLoading = true;
+        var file = e.GetMultipleFiles().FirstOrDefault();
+
+        if (file != null) {
+            long maxFileSize = 2L * 1024L * 1024L * 1024L; // 2GB
+
+            var buffer = new byte[file.Size];
+            await file.OpenReadStream(maxAllowedSize:maxFileSize).ReadAsync(buffer);
+            FileBase64 = "data:image/png;base64," + Convert.ToBase64String(buffer);
+            fileInput = new byte[buffer.Length];
+            buffer.CopyTo(fileInput, 0);
+        } 
+        else 
+        {
+            FileBase64 = null;
+        }
+
+        isFileLoading = false;
+    }
+
+    private bool ValidateInputs() {
+        if (string.IsNullOrEmpty(regNumberInput) || regNumberInput.Length < 6 || regNumberInput.Length > 10) {
+            regNumberInputErrorMessage = "Registration must be between 6 and 10 characters";
+            return false;
+        }
+
+        regNumberInputErrorMessage = string.Empty;
+        return true;
+    }
+}

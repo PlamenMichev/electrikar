@@ -1,0 +1,73 @@
+﻿@page "/cars-list"
+@using shared
+@using shared.Enums
+@using shared.Models
+@inject HttpClient Http
+@inject NavigationManager NavManager
+
+<PageTitle>Cars</PageTitle>
+
+<h1>Cars</h1>
+
+<p>Those are the cars in the system</p>
+
+@if (cars == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    @if(isCarAdded)
+    {
+        <div class="alert alert-success" role="alert">
+            A new car has been added successfully!
+        </div>
+    }
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th></th>
+                <th>Registration Number</th>
+                <th>Make</th>
+                <th>Model</th>
+                <th>Type</th>
+                <th>Color</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var car in cars)
+            {
+                <tr>
+                    <td><img src="@car.ImageUrl"  width="100px" height="100px"/></td>
+                    <td>@car.RegistrationNumber</td>
+                    <td>@car.Make</td>
+                    <td>@ModelsDisplayNames.GetDisplayName(car.Model)</td>
+                    <td>@car.Type</td>
+                    <td>@car.Color</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private CarDto[]? cars;
+    private bool isCarAdded;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var query = new Uri(NavManager.Uri).Query;
+        if (query.Contains("car-added")) {
+            // Show snackbar
+            isCarAdded = true;
+
+            // Remove the query parameter
+            NavManager.NavigateTo("/cars-list");
+        }
+
+        var serverUrl = "http://localhost:5098";
+        cars = await Http.GetFromJsonAsync<CarDto[]>($"{serverUrl}/cars/all");
+    }
+
+}

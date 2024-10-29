@@ -1,0 +1,34 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "blazor-client", "blazor-client\blazor-client.csproj", "{98579126-6C91-4B44-AFE2-59CF6B470149}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "dotnet-server", "dotnet-server\dotnet-server.csproj", "{F8DD83D0-9158-45F8-9B68-DAF3217B6F8F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "shared", "shared\shared.csproj", "{1AC22646-5367-478E-8E7E-49E11D631BF1}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{98579126-6C91-4B44-AFE2-59CF6B470149}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{98579126-6C91-4B44-AFE2-59CF6B470149}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{98579126-6C91-4B44-AFE2-59CF6B470149}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{98579126-6C91-4B44-AFE2-59CF6B470149}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F8DD83D0-9158-45F8-9B68-DAF3217B6F8F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F8DD83D0-9158-45F8-9B68-DAF3217B6F8F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F8DD83D0-9158-45F8-9B68-DAF3217B6F8F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F8DD83D0-9158-45F8-9B68-DAF3217B6F8F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1AC22646-5367-478E-8E7E-49E11D631BF1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1AC22646-5367-478E-8E7E-49E11D631BF1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1AC22646-5367-478E-8E7E-49E11D631BF1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1AC22646-5367-478E-8E7E-49E11D631BF1}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
