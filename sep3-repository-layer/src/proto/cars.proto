@@ -60,10 +60,10 @@ message UpdateCarResponse {
 }
 
 message DeleteCarRequest {
-  int64 id = 1;
+  string regNumber= 1;
 }
 
 message DeleteCarResponse {
-  int64 id = 1;
+  string regNumber = 1;
 }
 

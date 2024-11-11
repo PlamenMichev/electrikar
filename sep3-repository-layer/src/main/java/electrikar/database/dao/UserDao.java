@@ -13,8 +13,8 @@ public interface UserDao
 
   User createUser(String legalName, String email, String password, String cpr, String phone, boolean isAdmin, boolean isBanned) throws SQLException;
   void updateUser(User user) throws SQLException;
-  User getUserByUsername(String username) throws SQLException;
-  void deleteUserByUsername(String username) throws SQLException;
+  User getUserByLegalName(String LegalName) throws SQLException;
+  void deleteUserById(int id) throws SQLException;
   ArrayList<User> getAll() throws SQLException;
 
 
