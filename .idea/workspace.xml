@@ -8,7 +8,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="5e1e0162-e9ed-4fc5-935f-cea7fd1ea3fa" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/sep3-repository-layer/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/sep3-repository-layer/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -24,6 +24,19 @@
     </option>
   </component>
   <component name="Git.Settings">
+    <excluded-from-favorite>
+      <branch-storage>
+        <map>
+          <entry type="LOCAL">
+            <value>
+              <list>
+                <branch-info repo="$PROJECT_DIR$" source="main" />
+              </list>
+            </value>
+          </entry>
+        </map>
+      </branch-storage>
+    </excluded-from-favorite>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="ProjectColorInfo">{
@@ -37,27 +50,43 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "Application.Main.executor": "Run",
-    "Maven.sep3-repository-layer [compile].executor": "Run",
-    "Maven.sep3-repository-layer [validate].executor": "Run",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "git-widget-placeholder": "Car__CRUD",
-    "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "C:/Users/Mario/Downloads/MyDatabase.jar",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "project.structure.last.edited": "Libraries",
-    "project.structure.proportion": "0.15",
-    "project.structure.side.proportion": "0.2",
-    "settings.editor.selected.configurable": "tools.buf",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Application.Main.executor&quot;: &quot;Run&quot;,
+    &quot;Maven.sep3-repository-layer [compile].executor&quot;: &quot;Run&quot;,
+    &quot;Maven.sep3-repository-layer [validate].executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;Car__CRUD&quot;,
+    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/Mario/Documents/SEP3/electrikar&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;project.structure.last.edited&quot;: &quot;Modules&quot;,
+    &quot;project.structure.proportion&quot;: &quot;0.15&quot;,
+    &quot;project.structure.side.proportion&quot;: &quot;0.2&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;configurable.group.editor&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
+  <component name="RunManager">
+    <configuration default="true" type="JetRunConfigurationType">
+      <module name="sep3-repository-layer" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration default="true" type="KotlinStandaloneScriptRunConfigurationType">
+      <module name="sep3-repository-layer" />
+      <option name="filePath" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+  </component>
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
@@ -76,6 +105,33 @@
       <updated>1730905066945</updated>
       <workItem from="1730905068021" duration="7188000" />
       <workItem from="1731161270694" duration="4932000" />
+      <workItem from="1731403587966" duration="40000" />
+      <workItem from="1731403653731" duration="137000" />
+      <workItem from="1731403802006" duration="87000" />
+      <workItem from="1731403917235" duration="80000" />
+      <workItem from="1731404005277" duration="75000" />
+      <workItem from="1731404091436" duration="56000" />
+      <workItem from="1731404165004" duration="6000" />
+      <workItem from="1731404179270" duration="61000" />
+      <workItem from="1731404269983" duration="657000" />
+      <workItem from="1731404946317" duration="12000" />
+      <workItem from="1731404967064" duration="108000" />
+      <workItem from="1731405082879" duration="65000" />
+      <workItem from="1731405180046" duration="8000" />
+      <workItem from="1731405225421" duration="89000" />
+      <workItem from="1731405322198" duration="86000" />
+      <workItem from="1731405485284" duration="10000" />
+      <workItem from="1731405504963" duration="79000" />
+      <workItem from="1731405594344" duration="7000" />
+      <workItem from="1731405611673" duration="85000" />
+      <workItem from="1731405701680" duration="48000" />
+      <workItem from="1731405776175" duration="26000" />
+      <workItem from="1731405806261" duration="108000" />
+      <workItem from="1731405919338" duration="23000" />
+      <workItem from="1731406332051" duration="7000" />
+      <workItem from="1731406351095" duration="290000" />
+      <workItem from="1731406648332" duration="13000" />
+      <workItem from="1731406668891" duration="28000" />
     </task>
     <servers />
   </component>

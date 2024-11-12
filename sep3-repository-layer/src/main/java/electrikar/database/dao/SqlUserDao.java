@@ -5,16 +5,18 @@ import electrikar.User;
 import java.sql.*;
 import java.util.ArrayList;
 
-public class SqlUserDao implements UserDao{
+public class SqlUserDao implements UserDao
+{
 
   private static SqlUserDao instance;
+  private final DatabaseConnector dbConnector = new DatabaseConnector();
 
-  private SqlUserDao() throws SQLException
+  public SqlUserDao() throws SQLException
   {
     DriverManager.registerDriver(new org.postgresql.Driver());
   }
 
-  public static synchronized SqlUserDao getInstance() throws SQLException
+  private static synchronized SqlUserDao getInstance() throws SQLException
   {
     if (instance == null)
     {
@@ -23,17 +25,13 @@ public class SqlUserDao implements UserDao{
     return instance;
   }
 
-  private Connection getConnection() throws SQLException
-  {
-    return DriverManager.getConnection(
-        "jdbc:postgresql://localhost:5432/postgres?currentSchema=electrikar",
-        "postgres", "Plamen123");
-  }
 
 
-  @Override public User createUser(String legalName, String email, String password, String cpr, String phone, boolean isAdmin, boolean isBanned) throws SQLException
+  @Override public User createUser(String legalName, String email,
+      String password, String cpr, String phone, boolean isAdmin,
+      boolean isBanned) throws SQLException
   {
-    try(Connection connection = getConnection())
+    try(Connection connection = dbConnector.connect())
     {
       PreparedStatement statement = connection.prepareStatement(
           "INSERT INTO \"User\"(legal_name, email, password, cpr, phone, is_admin, is_banned) VALUES (?, ?, ?, ?, ?, ?, ?)");
@@ -60,13 +58,11 @@ public class SqlUserDao implements UserDao{
 
       }
     }
-
   }
 
-  @Override
-    public void updateUser(User user) throws SQLException
+  @Override public void updateUser(User user) throws SQLException
   {
-    try(Connection connection = getConnection())
+    try(Connection connection = dbConnector.connect())
     {
       PreparedStatement statement = connection.prepareStatement(
           "UPDATE \"User\" SET legal_name = ?, email = ?, password = ?, cpr = ?, phone = ?, is_admin = ?, is_banned = ? WHERE id = ?");
@@ -82,12 +78,9 @@ public class SqlUserDao implements UserDao{
     }
   }
 
-
-
-  @Override
-    public User getUserByLegalName(String legalName) throws SQLException
+  @Override public User getUserByLegalName(String legalName) throws SQLException
   {
-    try(Connection connection = getConnection())
+    try(Connection connection = dbConnector.connect())
     {
       PreparedStatement statement = connection.prepareStatement("SELECT * FROM \"User\" WHERE legal_name = ?");
       statement.setString(1, legalName);
@@ -110,11 +103,9 @@ public class SqlUserDao implements UserDao{
 
   }
 
-  @Override
-    public void deleteUserById(int id) throws SQLException
+  @Override public void deleteUserById(int id) throws SQLException
   {
-
-    try(Connection connection = getConnection())
+    try(Connection connection = dbConnector.connect())
     {
       PreparedStatement statement = connection.prepareStatement("DELETE FROM \"User\" WHERE id = ?");
       statement.setInt(1, id);
@@ -123,10 +114,9 @@ public class SqlUserDao implements UserDao{
 
   }
 
-  @Override
-    public ArrayList<User> getAll() throws SQLException
+  @Override public ArrayList<User> getAll() throws SQLException
   {
-    try(Connection connection = getConnection())
+    try(Connection connection = dbConnector.connect())
     {
       PreparedStatement statement = connection.prepareStatement("SELECT * FROM \"User\"");
       ResultSet resultSet = statement.executeQuery();
@@ -146,5 +136,5 @@ public class SqlUserDao implements UserDao{
       return users;
     }
   }
+  }
 }
-

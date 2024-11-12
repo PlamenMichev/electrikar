@@ -13,6 +13,7 @@ public class SqlCarDao implements CarDao
 {
 
   private static SqlCarDao instance;
+  private final DatabaseConnector dbConnector = new DatabaseConnector();
 
   public SqlCarDao() throws SQLException
   {
@@ -28,14 +29,11 @@ public class SqlCarDao implements CarDao
     return instance;
   }
 
-  private Connection getConnection() throws SQLException
-  {
-    return DriverManager.getConnection("jdbc:postgresql://localhost:5432/postgres?currentSchema=electrikar", "postgres", "Plamen123");
-  }
+
   @Override public Car createCar(String regNum, CarColor color,
                                  CarMake make, CarModel model, CarType type, int price, byte[] image) throws SQLException
   {
-    try(Connection connection = getConnection())
+    try(Connection connection = dbConnector.connect())
     {
       PreparedStatement statement = connection.prepareStatement("INSERT INTO \"Car\"(reg_num, color,  make, model, type, price, image) VALUES (?, ?, ?, ?, ?, ?, ?)");
       statement.setString(1, regNum);
@@ -52,7 +50,7 @@ public class SqlCarDao implements CarDao
 
   @Override public void updateCar(Car car) throws SQLException
   {
-    try(Connection connection = getConnection())
+    try(Connection connection = dbConnector.connect())
     {
       PreparedStatement statement = connection.prepareStatement("UPDATE \"Car\" SET color = ?, make = ?, model = ?, type = ?, price = ?, image = ? WHERE reg_num = ?");
       statement.setInt(1, car.getColor().ordinal());
@@ -68,7 +66,7 @@ public class SqlCarDao implements CarDao
 
   @Override public Car getCarByReg(String reg) throws SQLException
   {
-    try(Connection connection = getConnection())
+    try(Connection connection = dbConnector.connect())
     {
       PreparedStatement statement = connection.prepareStatement("SELECT * FROM \"Car\" WHERE reg_num = ?");
       statement.setString(1, reg);
@@ -91,7 +89,7 @@ public class SqlCarDao implements CarDao
 
   @Override public void deleteCarByReg(String reg) throws SQLException
   {
-    try(Connection connection = getConnection())
+    try(Connection connection = dbConnector.connect())
     {
       PreparedStatement statement = connection.prepareStatement("DELETE FROM \"Car\" WHERE reg_num = ?");
       statement.setString(1, reg);
@@ -102,7 +100,7 @@ public class SqlCarDao implements CarDao
   @Override
     public ArrayList<Car> getAll() throws SQLException
     {
-        try(Connection connection = getConnection())
+        try(Connection connection = dbConnector.connect())
         {
             PreparedStatement statement = connection.prepareStatement("SELECT * FROM \"Car\"");
             ResultSet resultSet = statement.executeQuery();
