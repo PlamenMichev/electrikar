@@ -5,6 +5,8 @@ import electrikar.enums.CarMake;
 import electrikar.enums.CarModel;
 import electrikar.enums.CarType;
 
+import java.util.Arrays;
+
 public class Car
 {
   private String reg_number;
@@ -96,6 +98,18 @@ public class Car
   public void setImage(byte[] image)
   {
     this.image = image;
+  }
+
+  public String toString() {
+    return "Car{" +
+        "regNum='" + reg_number + '\'' +
+        ", color=" + color +
+        ", make=" + make +
+        ", model=" + model +
+        ", type=" + type +
+        ", price=" + price +
+        ", image=" + Arrays.toString(image) +
+        '}';
   }
 }
 

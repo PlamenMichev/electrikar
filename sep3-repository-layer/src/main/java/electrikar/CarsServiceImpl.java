@@ -40,6 +40,41 @@ public class CarsServiceImpl extends CarsServiceGrpc.CarsServiceImplBase {
         }
     }
 
+    @Override public void updateCar(UpdateCarRequest request,
+        StreamObserver<UpdateCarResponse> responseObserver)
+    {
+        try {
+            var car = new Car(request.getRegNumber(),
+                    CarColor.valueOf((int)request.getColor()),
+                    CarMake.valueOf((int)request.getMake()),
+                    CarModel.valueOf((int)request.getModel()),
+                    CarType.valueOf((int)request.getType()),
+                    0, request.getImage().toByteArray());
+            var carDao = SqlCarDao.getInstance();
+            carDao.updateCar(car);
+
+            var response = UpdateCarResponse.newBuilder().setRegNumber(car.getReg_number()).build();
+            responseObserver.onNext(response);
+            responseObserver.onCompleted();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override public void deleteCar(DeleteCarRequest request,
+        StreamObserver<DeleteCarResponse> responseObserver)
+    {
+        try {
+            var carDao = SqlCarDao.getInstance();
+            carDao.deleteCarByReg(request.getRegNumber());
+
+            var response = DeleteCarResponse.newBuilder().setRegNumber(request.getRegNumber()).build();
+            responseObserver.onNext(response);
+            responseObserver.onCompleted();
+        } catch (Exception e) {
+            e.printStackTrace();}
+    }
+
     @Override
     public void getAllCars(Empty request, StreamObserver<CarsList> responseObserver) {
         try {
@@ -66,4 +101,9 @@ public class CarsServiceImpl extends CarsServiceGrpc.CarsServiceImplBase {
             e.printStackTrace();
         }
     }
+
+
+
+
 }
+
