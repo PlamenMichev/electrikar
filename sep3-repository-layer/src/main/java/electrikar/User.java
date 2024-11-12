@@ -97,4 +97,18 @@ public class User
   {
     this.isBanned = isBanned;
   }
+
+  public String toString()
+  {
+    return "User{" +
+        "id=" + id +
+        ", legalName='" + legalName + '\'' +
+        ", email='" + email + '\'' +
+        ", password='" + password + '\'' +
+        ", cpr='" + cpr + '\'' +
+        ", phone='" + phone + '\'' +
+        ", isAdmin=" + isAdmin +
+        ", isBanned=" + isBanned +
+        '}';
+  }
 }

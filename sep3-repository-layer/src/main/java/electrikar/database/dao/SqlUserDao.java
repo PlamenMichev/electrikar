@@ -16,7 +16,7 @@ public class SqlUserDao implements UserDao
     DriverManager.registerDriver(new org.postgresql.Driver());
   }
 
-  private static synchronized SqlUserDao getInstance() throws SQLException
+  public static synchronized SqlUserDao getInstance() throws SQLException
   {
     if (instance == null)
     {
@@ -34,7 +34,7 @@ public class SqlUserDao implements UserDao
     try(Connection connection = dbConnector.connect())
     {
       PreparedStatement statement = connection.prepareStatement(
-          "INSERT INTO \"User\"(legal_name, email, password, cpr, phone, is_admin, is_banned) VALUES (?, ?, ?, ?, ?, ?, ?)");
+          "INSERT INTO \"User\"(legal_name, email, password, cpr, phone, is_admin, is_banned) VALUES (?, ?, ?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
       statement.setString(1, legalName);
       statement.setString(2, email);
       statement.setString(3, password);
@@ -43,6 +43,7 @@ public class SqlUserDao implements UserDao
       statement.setBoolean(6, isAdmin);
       statement.setBoolean(7, isBanned);
       statement.executeUpdate();
+
       try (ResultSet generatedKeys = statement.getGeneratedKeys())
       {
         if (generatedKeys.next())
@@ -137,4 +138,4 @@ public class SqlUserDao implements UserDao
     }
   }
   }
-}
+
