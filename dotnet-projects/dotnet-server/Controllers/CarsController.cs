@@ -15,6 +15,8 @@ public class CarsController : ControllerBase
     {
         _carsService = carsService;
     }
+    
+    [HttpGet("{id}")]
     public async Task<ActionResult<IEnumerable<CarDto>>> GetById([FromRoute] int id)
     {
         return Ok(
@@ -49,7 +51,7 @@ public class CarsController : ControllerBase
     [HttpPut("{id}")]
     public async Task<ActionResult<Car>> Update([FromRoute] int id,[FromBody] Car car)
     {
-        var response = await _carsService.UpdateCarAsync(id, car);
+        var response = await _carsService.UpdateCarAsync( car);
         return Ok(response);
     }
     

@@ -40,13 +40,13 @@ service CarsService {
 
 
 message UpdateCarRequest {
-  int64 id = 1;
-  string regNumber = 2;
-  int64 color = 3;
-  int64 make = 4;
-  int64 model = 5;
-  int64 type = 6;
-  bytes image = 7;
+
+  string regNumber = 1;
+  int64 color = 2;
+  int64 make = 3;
+  int64 model = 4;
+  int64 type = 5;
+  bytes image = 6;
 }
 
 message UpdateCarResponse {
@@ -54,7 +54,7 @@ message UpdateCarResponse {
   string regNumber = 2;
   int64 color = 3;
   int64 make = 4;
-  int64 model = 5;
+  int64 model =5;
   int64 type = 6;
   string image = 7;
 }

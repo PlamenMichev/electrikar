@@ -2,6 +2,7 @@ using shared.Enums;
 
 public class Car
 {
+    public int Id { get; set; }
     public string RegistrationNumber { get; set; }
     public Make Make { get; set; }
     public CarModel Model { get; set; }

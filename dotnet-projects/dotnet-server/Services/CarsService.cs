@@ -61,14 +61,34 @@ namespace dotnet_server.Services
             return new CarDto();
         }
 
-        public async Task<CarDto> UpdateCarAsync(int id, Car car)
+        public async Task<CarDto> UpdateCarAsync(Car car)
         {
-            throw new NotImplementedException();
+            using var channel = GrpcChannel.ForAddress("http://localhost:8080");
+            var client = new RepositoryGrpcService.CarsService.CarsServiceClient(channel);
+            var imageByteString = ByteString.CopyFrom(car.ImageByteArray);
+            
+            var response = await client.updateAsync(
+                new UpdateCarRequest
+                {
+                    RegNumber = car.RegistrationNumber,
+                    Color = (int)car.Color,
+                    Make = (int)car.Make,
+                    Model = (int)car.Model,
+                    Type = (int)car.Type,
+                    Image = ByteString.CopyFrom(car.ImageByteArray),
+                }
+            );
+            
+            return new CarDto();
         }
 
         public async Task DeleteCarAsync(int id)
         {
-            throw new NotImplementedException();
-        }
+            using var channel = GrpcChannel.ForAddress("http://localhost:8080");
+            var client = new RepositoryGrpcService.CarsService.CarsServiceClient(channel);
+
+            var request = new DeleteCarRequest { Id = id };
+            await client.deleteAsync(request);
+        }   
     }
 }
