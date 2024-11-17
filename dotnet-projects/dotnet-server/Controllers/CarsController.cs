@@ -16,13 +16,15 @@ public class CarsController : ControllerBase
         _carsService = carsService;
     }
 
-    public async Task<ActionResult<IEnumerable<CarDto>>> GetById([FromRoute] int id)
+    public async Task<ActionResult<IEnumerable<CarDto>>> GetById(
+        [FromRoute] string registrationNumber
+    )
     {
+        await Task.Delay(500);
         return Ok(
             new CarDto
             {
-                Id = 1,
-                RegistrationNumber = "ABC123",
+                RegistrationNumber = registrationNumber,
                 Make = Make.Tesla,
                 Model = CarModel.Tesla_ModelS,
                 Type = CarType.Sedan,
@@ -41,9 +43,9 @@ public class CarsController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<ActionResult<Car>> Create([FromBody] Car car)
+    public async Task<ActionResult<Car>> Create([FromBody] CarPostModel car)
     {
         var response = await _carsService.CreateCarAsync(car);
-        return CreatedAtAction(nameof(GetById), new { id = response.Id }, response);
+        return CreatedAtAction(nameof(GetById), new { response.RegistrationNumber }, response);
     }
 }

@@ -9,7 +9,7 @@ message CreateCarRequest {
   int64 make = 3;
   int64 model = 4;
   int64 type = 5;
-  bytes image = 6;
+  string image = 6;
 }
 
 message CreateCarResponse {
@@ -33,4 +33,34 @@ message Empty {
 service CarsService {
   rpc create(CreateCarRequest) returns (CreateCarResponse);
   rpc getAllCars(Empty) returns (CarsList);
+  rpc updateCar(UpdateCarRequest) returns (UpdateCarResponse);
+  rpc deleteCar(DeleteCarRequest) returns (DeleteCarResponse);
+}
+
+message UpdateCarRequest {
+  int64 id = 1;
+  string regNumber = 2;
+  int64 color = 3;
+  int64 make = 4;
+  int64 model = 5;
+  int64 type = 6;
+  string image = 7;
+}
+
+message UpdateCarResponse {
+  int64 id = 1;
+  string regNumber = 2;
+  int64 color = 3;
+  int64 make = 4;
+  int64 model = 5;
+  int64 type = 6;
+  string image = 7;
+}
+
+message DeleteCarRequest {
+  string regNumber= 1;
+}
+
+message DeleteCarResponse {
+  string regNumber = 1;
 }

@@ -6,7 +6,7 @@ namespace dotnet_server.Contracts
     {
         Task<IEnumerable<CarDto>> GetCarsAsync();
         Task<CarDto> GetCarAsync(int id);
-        Task<CarDto> CreateCarAsync(Car car);
+        Task<CarDto> CreateCarAsync(CarPostModel car);
         Task<CarDto> UpdateCarAsync(int id, Car car);
         Task DeleteCarAsync(int id);
     }

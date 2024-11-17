@@ -13,7 +13,7 @@ public interface CarDao
 {
 
   Car createCar(String regNum, CarColor color,  CarMake make, CarModel model,
-      CarType type, int price, byte[] image) throws SQLException;
+      CarType type, int price, String image) throws SQLException;
   void updateCar(Car car) throws SQLException;
   Car getCarByReg(String reg)  throws SQLException;
   void deleteCarByReg(String reg) throws SQLException;

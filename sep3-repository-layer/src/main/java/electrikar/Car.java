@@ -15,10 +15,10 @@ public class Car
   private CarMake make;
   private CarType type;
   private int price;
-  private byte[] image;
+  private String image;
 
   public Car(String reg_number, CarColor color,  CarMake make, CarModel model,
-      CarType type, int price, byte[] image)
+      CarType type, int price, String image)
   {
     this.reg_number = reg_number;
     this.color = color;
@@ -90,12 +90,12 @@ public class Car
     this.price = price;
   }
 
-  public byte[] getImage()
+  public String getImage()
   {
     return image;
   }
 
-  public void setImage(byte[] image)
+  public void setImage(String image)
   {
     this.image = image;
   }
@@ -108,7 +108,7 @@ public class Car
         ", model=" + model +
         ", type=" + type +
         ", price=" + price +
-        ", image=" + Arrays.toString(image) +
+        ", image=" + image +
         '}';
   }
 }
