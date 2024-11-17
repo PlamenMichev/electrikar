@@ -20,19 +20,8 @@ public class CarsController : ControllerBase
         [FromRoute] string registrationNumber
     )
     {
-        await Task.Delay(500);
-        return Ok(
-            new CarDto
-            {
-                RegistrationNumber = registrationNumber,
-                Make = Make.Tesla,
-                Model = CarModel.Tesla_ModelS,
-                Type = CarType.Sedan,
-                Color = Color.Black,
-                ImageUrl =
-                    "https://media.architecturaldigest.com/photos/63079fc7b4858efb76814bd2/16:9/w_4000,h_2250,c_limit/9.%20DeLorean-Alpha-5%20%5BDeLorean%5D.jpg"
-            }
-        );
+        var response = await _carsService.GetCarAsync(registrationNumber);
+        return Ok(response);
     }
 
     [HttpGet("all")]
@@ -47,5 +36,19 @@ public class CarsController : ControllerBase
     {
         var response = await _carsService.CreateCarAsync(car);
         return CreatedAtAction(nameof(GetById), new { response.RegistrationNumber }, response);
+    }
+
+    [HttpPut]
+    public async Task<ActionResult<Car>> Update([FromBody] CarPostModel car)
+    {
+        var response = await _carsService.UpdateCarAsync(car);
+        return Ok(response);
+    }
+
+    [HttpDelete("{regNumber}")]
+    public async Task<ActionResult> Delete([FromRoute] string regNumber)
+    {
+        await _carsService.DeleteCarAsync(regNumber);
+        return NoContent();
     }
 }
