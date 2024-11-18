@@ -99,10 +99,10 @@
     private Make makeInput;
     private CarModel modelInput;
     private CarType carTypeInput;
-    private byte[] fileInput;
+    private byte[] fileInput = Array.Empty<byte>();
     private string? FileBase64;
     private bool isFileLoading;
-    private string regNumberInputErrorMessage;
+    private string? regNumberInputErrorMessage;
     private bool isSubmitting;
 
     private async Task Submit()
@@ -117,14 +117,14 @@
             return;
         } 
 
-        var car = new Car
+        var car = new CarPostModel
         {
             RegistrationNumber = regNumberInput ?? string.Empty,
             Color = colorInput,
             Make = makeInput,
             Model = modelInput,
             Type = carTypeInput,
-            ImageByteArray = fileInput,
+            ImageByteArr = fileInput,
         };
 
         var serverUrl = "http://localhost:5098";

@@ -7,7 +7,7 @@ CREATE TABLE "Car"(
     make VARCHAR(50) NOT NULL,
     type INT NOT NULL,
     price INT NOT NULL,
-    image BYTEA NOT NULL
+    image VARCHAR(1024) NOT NULL
 );
 
 CREATE TABLE "User"(
@@ -34,5 +34,3 @@ CREATE TABLE "Rental"(
     FOREIGN KEY (car_reg) REFERENCES "Car"(reg_num),
     FOREIGN KEY (customer_id) REFERENCES "User"(id)
 );
-d
-

@@ -8,7 +8,7 @@ message CreateCarRequest {
   int64 make = 3;
   int64 model = 4;
   int64 type = 5;
-  bytes image = 6;
+  string image = 6;
 }
 
 message CreateCarResponse {
@@ -41,16 +41,20 @@ service CarsService {
 
 
 message UpdateCarRequest {
-
-  string regNumber = 1;
-  int64 color = 2;
-  int64 make = 3;
-  int64 model = 4;
-  int64 type = 5;
-  string image = 6;
+  int64 id = 1;
+  string regNumber = 2;
+  int64 color = 3;
+  int64 make = 4;
+  int64 model = 5;
+  int64 type = 6;
+  string image = 7;
 }
 
-message UpdateCarResponse {
+message GetCarRequest {
+  string regNumber = 1;
+}
+
+message GetCarResponse {
   int64 id = 1;
   string regNumber = 2;
   int64 color = 3;
@@ -66,18 +70,4 @@ message DeleteCarRequest {
 
 message DeleteCarResponse {
   string regNumber = 1;
-}
-
-message GetCarRequest {
-  string regNumber = 1;
-}
-
-message GetCarResponse {
-  int64 id = 1;
-  string regNumber = 2;
-  int64 color = 3;
-  int64 make = 4;
-  int64 model = 5;
-  int64 type = 6;
-  string image = 7;
 }

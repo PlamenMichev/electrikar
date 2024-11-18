@@ -31,7 +31,7 @@ public class SqlCarDao implements CarDao
 
 
   @Override public Car createCar(String regNum, CarColor color,
-                                 CarMake make, CarModel model, CarType type, int price, byte[] image) throws SQLException
+                                 CarMake make, CarModel model, CarType type, int price, String image) throws SQLException
   {
     try(Connection connection = dbConnector.connect())
     {
@@ -42,7 +42,7 @@ public class SqlCarDao implements CarDao
       statement.setInt(4, model.ordinal());
       statement.setInt(5, type.ordinal());
       statement.setInt(6, price);
-      statement.setBytes(7, image);
+      statement.setString(7, image);
       statement.executeUpdate();
       return new Car(regNum, color, make, model, type, price, image);
     }
@@ -58,7 +58,7 @@ public class SqlCarDao implements CarDao
       statement.setInt(3, car.getModel().ordinal());
       statement.setInt(4, car.getType().ordinal());
       statement.setInt(5, car.getPrice());
-      statement.setBytes(6, car.getImage());
+      statement.setString(6, car.getImage());
       statement.setString(7, car.getReg_number());
       statement.executeUpdate();
     }
@@ -78,7 +78,7 @@ public class SqlCarDao implements CarDao
         CarMake make = CarMake.valueOf(resultSet.getInt("make"));
         CarType type = CarType.valueOf(resultSet.getInt("type"));
         int price = resultSet.getInt("price");
-        byte[] image = resultSet.getBytes("image");
+        String image = resultSet.getString("image");
         return new Car(reg, color, make, model, type, price, image);
       }
       else {
@@ -113,7 +113,7 @@ public class SqlCarDao implements CarDao
                 CarMake make = CarMake.valueOf(resultSet.getInt("make"));
                 CarType type = CarType.valueOf(resultSet.getInt("type"));
                 int price = resultSet.getInt("price");
-                byte[] image = resultSet.getBytes("image");
+                String image = resultSet.getString("image");
                 cars.add(new Car(reg, color, make, model, type, price, image));
             }
             return cars;

@@ -1,74 +1,112 @@
 using dotnet_server.Contracts;
+using dotnet_server.grpc;
 using Google.Protobuf;
 using Grpc.Net.Client;
 using RepositoryGrpcService;
 using shared.Enums;
 using shared.Models;
 
-namespace dotnet_server.Services
+namespace dotnet_server.Services;
+
+public class CarsService : ICarsService
 {
-    public class CarsService : ICarsService
+    private ICloudinaryService _cloudinaryService;
+
+    public CarsService(ICloudinaryService cloudinaryService)
     {
-        public async Task<IEnumerable<CarDto>> GetCarsAsync()
+        _cloudinaryService = cloudinaryService;
+    }
+
+    public async Task<IEnumerable<CarDto>> GetCarsAsync()
+    {
+        var client = GrpcConnector.ConnectCarServiceAsync();
+        var resonse = await client.getAllCarsAsync(new() { });
+
+        return resonse.Cars.Select(car => new CarDto
         {
-            using var channel = GrpcChannel.ForAddress(
-                "http://localhost:8080",
-                new GrpcChannelOptions()
-                {
-                    MaxReceiveMessageSize = 1024 * 1024 * 1024,
-                    MaxSendMessageSize = 1024 * 1024 * 1024,
-                }
-            );
+            Color = (Color)car.Color,
+            Make = (Make)car.Make,
+            Model = (CarModel)car.Model,
+            Type = (CarType)car.Type,
+            RegistrationNumber = car.RegNumber,
+            ImageUrl = car.Image,
+        });
+    }
 
-            var client = new RepositoryGrpcService.CarsService.CarsServiceClient(channel);
-            var resonse = await client.getAllCarsAsync(new() { });
+    public async Task<CarDto> GetCarAsync(string regNumber)
+    {
+        var client = GrpcConnector.ConnectCarServiceAsync();
+        await Task.Delay(1000);
+        // var response = await client.(new GetCarRequest { RegNumber = regNumber });
 
-            return resonse.Cars.Select(car => new CarDto
+        // TODO use real data
+        return new CarDto()
+        {
+            RegistrationNumber = "response.RegNumber",
+            Make = Make.Ford,
+            Model = CarModel.Ford_Edge,
+            Type = CarType.Sedan,
+            Color = Color.Black,
+            ImageUrl = "response.Image",
+        };
+    }
+
+    public async Task<CarDto> CreateCarAsync(CarPostModel car)
+    {
+        var client = GrpcConnector.ConnectCarServiceAsync();
+
+        // Get image url
+        var imageUrl = await _cloudinaryService.UploadImageAsync(car.ImageByteArr);
+
+        var response = await client.createAsync(
+            new CreateCarRequest
             {
-                Color = (Color)car.Color,
-                Make = (Make)car.Make,
-                Model = (CarModel)car.Model,
-                Type = (CarType)car.Type,
-                RegistrationNumber = car.RegNumber,
-                ImageUrl = "data:image/png;base64, " + car.Image,
-            });
-        }
+                Color = (int)car.Color,
+                Make = (int)car.Make,
+                Model = (int)car.Model,
+                Type = (int)car.Type,
+                RegNumber = car.RegistrationNumber,
+                Image = imageUrl,
+            }
+        );
 
-        public async Task<CarDto> GetCarAsync(int id)
+        return new CarDto()
         {
-            throw new NotImplementedException();
-        }
+            RegistrationNumber = response.RegNumber,
+            Make = (Make)response.Make,
+            Model = (CarModel)response.Model,
+            Type = (CarType)response.Type,
+            Color = (Color)response.Color,
+            ImageUrl = response.Image,
+        };
+    }
 
-        public async Task<CarDto> CreateCarAsync(Car car)
-        {
-            using var channel = GrpcChannel.ForAddress("http://localhost:8080");
-            // Casting byte array to byte string
-            var imageByteString = ByteString.CopyFrom(car.ImageByteArray);
+    public async Task<CarDto> UpdateCarAsync(CarPostModel car)
+    {
+        var client = GrpcConnector.ConnectCarServiceAsync();
 
-            var client = new RepositoryGrpcService.CarsService.CarsServiceClient(channel);
-            var response = await client.createAsync(
-                new CreateCarRequest
-                {
-                    Color = (int)car.Color,
-                    Make = (int)car.Make,
-                    Model = (int)car.Model,
-                    Type = (int)car.Type,
-                    RegNumber = car.RegistrationNumber,
-                    Image = imageByteString,
-                }
-            );
+        // Get image url
+        var imageUrl = await _cloudinaryService.UploadImageAsync(car.ImageByteArr);
 
-            return new CarDto();
-        }
+        var response = await client.updateCarAsync(
+            new UpdateCarRequest
+            {
+                RegNumber = car.RegistrationNumber,
+                Color = (int)car.Color,
+                Make = (int)car.Make,
+                Model = (int)car.Model,
+                Type = (int)car.Type,
+                Image = imageUrl,
+            }
+        );
 
-        public async Task<CarDto> UpdateCarAsync(int id, Car car)
-        {
-            throw new NotImplementedException();
-        }
+        return new CarDto() { RegistrationNumber = response.RegNumber, };
+    }
 
-        public async Task DeleteCarAsync(int id)
-        {
-            throw new NotImplementedException();
-        }
+    public async Task DeleteCarAsync(string regNumber)
+    {
+        var client = GrpcConnector.ConnectCarServiceAsync();
+        var request = new DeleteCarRequest { RegNumber = regNumber, };
+        await client.deleteCarAsync(request);
     }
 }

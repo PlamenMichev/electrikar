@@ -28,7 +28,7 @@ public class CarsServiceImpl extends CarsServiceGrpc.CarsServiceImplBase {
                     CarMake.valueOf((int)request.getMake()),
                     CarModel.valueOf((int)request.getModel()),
                     CarType.valueOf((int)request.getType()),
-                    0, request.getImage().toByteArray());
+                    0, request.getImage());
             var carDao = SqlCarDao.getInstance();
             var newCar = carDao.createCar(car.getReg_number(), car.getColor(), car.getMake(), car.getModel(), car.getType(), car.getPrice(), car.getImage());
 
@@ -49,7 +49,7 @@ public class CarsServiceImpl extends CarsServiceGrpc.CarsServiceImplBase {
                     CarMake.valueOf((int)request.getMake()),
                     CarModel.valueOf((int)request.getModel()),
                     CarType.valueOf((int)request.getType()),
-                    0, new byte[0]);
+                    0, request.getImage());
             var carDao = SqlCarDao.getInstance();
             carDao.updateCar(car);
 
@@ -90,7 +90,7 @@ public class CarsServiceImpl extends CarsServiceGrpc.CarsServiceImplBase {
                         .setMake(car.getMake().ordinal())
                         .setModel(car.getModel().ordinal())
                         .setType(car.getType().ordinal())
-                        .setImage(base64Encoded)
+                        .setImage(car.getImage())
                         .build();
                 carsList.addCars(carProto);
             }
@@ -112,14 +112,12 @@ public void getCar(GetCarRequest request, StreamObserver<GetCarResponse> respons
 
         if (car != null)
         {
-            var base64Encoded = Base64.getEncoder()
-                .encodeToString(car.getImage());
             var carProto = GetCarResponse.newBuilder()
                 .setRegNumber(car.getReg_number())
                 .setColor(car.getColor().ordinal())
                 .setMake(car.getMake().ordinal())
                 .setModel(car.getModel().ordinal())
-                .setType(car.getType().ordinal()).setImage(base64Encoded)
+                .setType(car.getType().ordinal()).setImage(car.getImage())
                 .build();
             responseObserver.onNext(carProto);
         }
