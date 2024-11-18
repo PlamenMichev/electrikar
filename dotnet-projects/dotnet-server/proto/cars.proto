@@ -43,7 +43,7 @@ message UpdateCarResponse {
   string regNumber = 2;
   int64 color = 3;
   int64 make = 4;
-  int64 model =5;
+  int64 model = 5;
   int64 type = 6;
   string image = 7;
 }
