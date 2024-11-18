@@ -32,7 +32,7 @@
     <div class="form-group col-xs-12 col-md-6 mb-4">
         <label for="carInput">Car</label> 
         <select @bind="carInput" class="form-control" id="makeInput">
-            @foreach (var car in cars) // TODO: auto select car from car list
+            @foreach (var car in cars)
             {
                 <option value="@car.RegistrationNumber">@car.Type, @car.Make</option> // TODO: Disable unavailable cars
             }
@@ -62,42 +62,33 @@
             </div>
         </div>
     </div>
-
-    <!--
-    <div class="form-group col-xs-12 col-md-6 mb-4">
-        <label for="statusInput">Status</label>
-        <select @bind="statusInput" class="form-control" id="statusInput">
-            <option value="0">OPTION 1</option>
-            <option value="1">OPTION 2</option>
-            <option value="2">OPTION 3</option>
-        </select>
-    </div>
-    -->
 </form>
 
 
 @code {
     private DateTime? startDateInput;
-    private string startDateInputErrorMessage;
+    private string? startDateInputErrorMessage;
     
     private DateTime? endDateInput;
-    private string endDateInputErrorMessage;
+    private string? endDateInputErrorMessage;
     
-    private CarDto[]? cars;
-    private string carInput;
+    private List<CarDto> cars = new List<CarDto>();
+    private string? carInput;
     
     private string? userIdInput;
-    private string userIdInputErrorMessage;
-
-    // private int statusInput; TODO: Status input
+    private string? userIdInputErrorMessage;
     
-    private bool isFileLoading;
     private bool isSubmitting;
     
     protected override async Task OnInitializedAsync()
     {
         var serverUrl = "http://localhost:5098";
-        cars = await Http.GetFromJsonAsync<CarDto[]>($"{serverUrl}/cars/all");
+        var parsedCars = await Http.GetFromJsonAsync<List<CarDto>>($"{serverUrl}/cars/all");
+
+        if (parsedCars != null)
+        {
+            cars = parsedCars;
+        }
         
         // Get users
     }
@@ -169,7 +160,6 @@
         {
             userIdInputErrorMessage = string.Empty;
         }
-        
         
         return validated;
     }
