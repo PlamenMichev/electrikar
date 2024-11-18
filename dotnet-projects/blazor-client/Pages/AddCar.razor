@@ -1,166 +1,104 @@
-@page "/add-car"
+@page "/cars-list"
+@using shared
 @using shared.Enums
 @using shared.Models
 @inject HttpClient Http
 @inject NavigationManager NavManager
 
-<PageTitle>Add Car</PageTitle>
+<PageTitle>Cars</PageTitle>
 
-<form @onsubmit="Submit" class="row">
-  <div class="form-group col-xs-12 col-md-6">
-    <label for="regNumberInput">Registration Number</label>
-    <input @bind="regNumberInput" class="@(!string.IsNullOrEmpty(regNumberInputErrorMessage)? "is-invalid form-control" : "form-control")" placeholder="E1977MK" id="regNumberInput">
-    <div class="@(!string.IsNullOrEmpty(regNumberInputErrorMessage)? "invalid-feedback" : "feedback")">
-        @(regNumberInputErrorMessage ?? "This field should be unique for the whole system")
-    </div>
-  </div>
+<h1>Cars</h1>
 
-  <div class="form-group col-xs-12 col-md-6 mb-4">
-    <label for="colorInput">Color</label>
-    <select @bind="colorInput" class="form-control" id="colorInput">
-        @foreach (var color in Enum.GetValues(typeof(Color)))
-        {
-            <option value="@color">@color</option>
-        }
-    </select>
-  </div>
+<p>Those are the cars in the system</p>
 
-  <div class="form-group col-xs-12 col-md-6 mb-4">
-    <label for="makeInput">Make</label>
-    <select @bind="makeInput" class="form-control" id="makeInput">
-        @foreach (var make in Enum.GetValues(typeof(Make)))
-        {
-            <option value="@make">@make</option>
-        }
-    </select>
-  </div>
-
-  <div class="form-group col-xs-12 col-md-6">
-    <label for="modelInput">Model</label>
-    <select @bind="modelInput" class="form-control" id="modelInput">
-        @foreach (var model in new Model(makeInput).Models)
-        {
-            <option value="@model">@ModelsDisplayNames.GetDisplayName(model)</option>
-        }
-    </select>
-  </div>
-
-  <div class="form-group col-xs-12 col-md-6">
-    <label for="carTypeInput">Type</label>
-    <select @bind="carTypeInput" class="form-control" id="carTypeInput">
-        @foreach (var carType in Enum.GetValues(typeof(CarType)))
-        {
-            <option value="@carType">@carType</option>
-        }
-    </select>
-  </div>
-
-   <div class="form-group col-xs-12 col-md-6 d-flex flex-column justify-content-center">
-    <label for="fileInput">Example file input</label>
-    <InputFile id="fileInput" class="form-control-file" OnChange="@LoadFile" accept=".jpg, .jpeg, .png" />
-  </div>
-
-  <div class="col-md-6" />
-
-    <div class="col-xs-12 col-md-6 mt-2">
-        @if (isFileLoading) {
-            <div style="display: flex; height: 200px; width: 200px; align-items: center; justify-content: center;">
-                <div class="spinner-border text-primary" role="status" />
-            </div>
-        }
-        else {
-            <div>
-                <img class="block" src="@FileBase64" height="200px" width="200px" />
-            </div>
-        }
-    </div>
-
-    <div class="row">
-        <div class="col">
-            <div class="text-end">
-                <button disabled="@isSubmitting"  type="submit" class="btn btn-primary mt-2 pull-right" style="width: 100px">
-                    @if (isSubmitting) 
-                    {
-                        <div class="spinner-border text-white" role="status" />
-                    }
-                    else {
-                        <span>Submit</span>
-                    }
-                    </button>
-            </div>
+@if (cars == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    @if(isCarAdded)
+    {
+        <div class="alert alert-success" role="alert">
+            A new car has been added successfully!
         </div>
-    </div>
-</form>
+    }
+    /*@if(isCarEdited) TODO
+        {
+        <div class="alert alert-success" role="alert">
+            The car was edited successfully!
+        </div>*/
+        }
 
+    <table class="table">
+        <thead>
+            <tr>
+                <th></th>
+                <th>Registration Number</th>
+                <th>Make</th>
+                <th>Model</th>
+                <th>Type</th>
+                <th>Color</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var car in cars)
+            {
+                    <tr @onclick="() => NavigateToEditCar(car)" style="cursor: pointer;">
+                    <td><img src="@car.ImageUrl" width="100px" height="100px"/></td>
+                    <td>@car.RegistrationNumber</td>
+                    <td>@car.Make</td>
+                    <td>@ModelsDisplayNames.GetDisplayName(car.Model)</td>
+                    <td>@car.Type</td>
+                    <td>@car.Color</td>
+                    <td>
+                        <button @onclick="() => DeleteCarAsync(car.RegistrationNumber)" @onclick:stopPropagation="true" class="btn btn-danger">Delete</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
 
 @code {
-    private string? regNumberInput;
-    private Color colorInput;
-    private Make makeInput;
-    private CarModel modelInput;
-    private CarType carTypeInput;
-    private byte[] fileInput = Array.Empty<byte>();
-    private string? FileBase64;
-    private bool isFileLoading;
-    private string? regNumberInputErrorMessage;
-    private bool isSubmitting;
+    private CarDto[]? cars;
+    private bool isCarAdded;
 
-    private async Task Submit()
-    {   
-        if (isSubmitting) return;
-
-        isSubmitting = true;
-        var isFormValid = ValidateInputs();
-        if (!isFormValid)
+    protected override async Task OnInitializedAsync()
+    {
+        var query = new Uri(NavManager.Uri).Query;
+        if (query.Contains("car-added"))
         {
-            isSubmitting = false;
-            return;
-        } 
+            // Show snackbar
+            isCarAdded = true;
 
-        var car = new CarPostModel
-        {
-            RegistrationNumber = regNumberInput ?? string.Empty,
-            Color = colorInput,
-            Make = makeInput,
-            Model = modelInput,
-            Type = carTypeInput,
-            ImageByteArr = fileInput,
-        };
+            // Remove the query parameter
+            NavManager.NavigateTo("/cars-list");
+        }
 
         var serverUrl = "http://localhost:5098";
-        await Http.PostAsJsonAsync($"{serverUrl}/cars", car);
-        isSubmitting = false;
-        NavManager.NavigateTo("/cars-list?car-added=true");
+        cars = await Http.GetFromJsonAsync<CarDto[]>($"{serverUrl}/cars/all");
     }
 
-    private async Task LoadFile(InputFileChangeEventArgs e) { 
-        isFileLoading = true;
-        var file = e.GetMultipleFiles().FirstOrDefault();
+    private async Task DeleteCarAsync(string RegistrationNumber) //TODO
+    {
+            var serverUrl = "http://localhost:5098";
+            var response = await Http.DeleteAsync($"{serverUrl}/cars/{RegistrationNumber}");
 
-        if (file != null) {
-            long maxFileSize = 2L * 1024L * 1024L * 1024L; // 2GB
-
-            var buffer = new byte[file.Size];
-            await file.OpenReadStream(maxAllowedSize:maxFileSize).ReadAsync(buffer);
-            FileBase64 = "data:image/png;base64," + Convert.ToBase64String(buffer);
-            fileInput = new byte[buffer.Length];
-            buffer.CopyTo(fileInput, 0);
-        } 
-        else 
-        {
-            FileBase64 = null;
+            if (response.IsSuccessStatusCode)
+            {
+                cars = cars?.Where(c => c.RegistrationNumber != RegistrationNumber).ToArray();
+            }
+            else
+            {
+                Console.WriteLine($"Car could not be deleted");
+            }
         }
 
-        isFileLoading = false;
+    private void NavigateToEditCar(CarDto car)
+    {
+        NavManager.NavigateTo($"/edit-car/{car.RegistrationNumber}");
     }
 
-    private bool ValidateInputs() {
-        if (string.IsNullOrEmpty(regNumberInput) || regNumberInput.Length < 6 || regNumberInput.Length > 10) {
-            regNumberInputErrorMessage = "Registration must be between 6 and 10 characters";
-            return false;
-        }
 
-        regNumberInputErrorMessage = string.Empty;
-        return true;
-    }
 }
