@@ -82,23 +82,21 @@ else
 
     private async Task DeleteCarAsync(string RegistrationNumber) //TODO
     {
-            var serverUrl = "http://localhost:5098";
-            var response = await Http.DeleteAsync($"{serverUrl}/cars/{RegistrationNumber}");
+        var serverUrl = "http://localhost:5098";
+        var response = await Http.DeleteAsync($"{serverUrl}/cars/{RegistrationNumber}");
 
-            if (response.IsSuccessStatusCode)
-            {
-                cars = cars?.Where(c => c.RegistrationNumber != RegistrationNumber).ToArray();
-            }
-            else
-            {
-                Console.WriteLine($"Car could not be deleted");
-            }
+        if (response.IsSuccessStatusCode)
+        {
+            cars = cars?.Where(c => c.RegistrationNumber != RegistrationNumber).ToArray();
         }
+        else
+        {
+            Console.WriteLine($"Car could not be deleted");
+        }
+    }
 
     private void NavigateToEditCar(CarDto car)
     {
         NavManager.NavigateTo($"/edit-car/{car.RegistrationNumber}");
     }
-
-
 }

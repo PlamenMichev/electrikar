@@ -119,34 +119,30 @@
             return;
         } 
 
-        
-            car.RegistrationNumber = regNumberInput ?? string.Empty;
-            car.Color = colorInput;
-            car.Make = makeInput;
-            car.Model = modelInput;
-            car.Type = carTypeInput;
-            //car.ImageByteArray = fileInput; TODO
-       
+        car.RegistrationNumber = regNumberInput ?? string.Empty;
+        car.Color = colorInput;
+        car.Make = makeInput;
+        car.Model = modelInput;
+        car.Type = carTypeInput;
+        //car.ImageByteArray = fileInput; TODO
 
         var serverUrl = "http://localhost:5098";
         await Http.PostAsJsonAsync($"{serverUrl}/cars", car);
         isSubmitting = false;
         NavManager.NavigateTo("/cars-list?car-edited=true");
-            
-        
     }
 
-protected override async Task OnInitializedAsync()
-{
-    var serverUrl = "http://localhost:5098";
-    
-    car = await Http.GetFromJsonAsync<CarDto>($"{serverUrl}/cars/{RegistrationNumber}"); 
-    regNumberInput = car?.RegistrationNumber;
-    colorInput = car?.Color ?? default;
-    makeInput = car?.Make ?? default;
-    modelInput = car?.Model ?? default;
-    carTypeInput = car?.Type ?? default;
-}
+    protected override async Task OnInitializedAsync()
+    {
+        var serverUrl = "http://localhost:5098";
+        
+        car = await Http.GetFromJsonAsync<CarDto>($"{serverUrl}/cars/{RegistrationNumber}"); 
+        regNumberInput = car?.RegistrationNumber;
+        colorInput = car?.Color ?? default;
+        makeInput = car?.Make ?? default;
+        modelInput = car?.Model ?? default;
+        carTypeInput = car?.Type ?? default;
+    }
 
     private async Task LoadFile(InputFileChangeEventArgs e) { 
         isFileLoading = true;
