@@ -16,6 +16,7 @@ public class CarsController : ControllerBase
         _carsService = carsService;
     }
 
+    [HttpGet("{id}")]
     public async Task<ActionResult<IEnumerable<CarDto>>> GetById([FromRoute] int id)
     {
         return Ok(

@@ -47,7 +47,7 @@ message UpdateCarRequest {
   int64 make = 3;
   int64 model = 4;
   int64 type = 5;
-  bytes image = 6;
+  string image = 6;
 }
 
 message UpdateCarResponse {

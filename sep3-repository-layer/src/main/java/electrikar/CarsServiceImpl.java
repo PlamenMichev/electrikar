@@ -49,7 +49,7 @@ public class CarsServiceImpl extends CarsServiceGrpc.CarsServiceImplBase {
                     CarMake.valueOf((int)request.getMake()),
                     CarModel.valueOf((int)request.getModel()),
                     CarType.valueOf((int)request.getType()),
-                    0, request.getImage().toByteArray());
+                    0, new byte[0]);
             var carDao = SqlCarDao.getInstance();
             carDao.updateCar(car);
 
