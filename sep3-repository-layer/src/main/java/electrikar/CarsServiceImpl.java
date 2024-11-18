@@ -102,7 +102,38 @@ public class CarsServiceImpl extends CarsServiceGrpc.CarsServiceImplBase {
         }
     }
 
+@Override
+public void getCar(GetCarRequest request, StreamObserver<GetCarResponse> responseObserver)
+{
+    try
+    {
+        var carDao = SqlCarDao.getInstance();
+        var car = carDao.getCarByReg(request.getRegNumber());
 
+        if (car != null)
+        {
+            var base64Encoded = Base64.getEncoder()
+                .encodeToString(car.getImage());
+            var carProto = GetCarResponse.newBuilder()
+                .setRegNumber(car.getReg_number())
+                .setColor(car.getColor().ordinal())
+                .setMake(car.getMake().ordinal())
+                .setModel(car.getModel().ordinal())
+                .setType(car.getType().ordinal()).setImage(base64Encoded)
+                .build();
+            responseObserver.onNext(carProto);
+        }
+        else
+        {
+            responseObserver.onNext(GetCarResponse.newBuilder().build());
+        }
+        responseObserver.onCompleted();
+    }
+    catch (Exception e)
+    {
+        e.printStackTrace();
+    }
+}
 
 
 }
