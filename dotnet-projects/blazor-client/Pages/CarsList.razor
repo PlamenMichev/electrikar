@@ -15,10 +15,6 @@
 {
     <p><em>Loading...</em></p>
 }
-else if (cars.Length == 0)
-{
-    <p><em>No cars found</em></p>
-}
 else
 {
     @if(isCarAdded)
@@ -42,13 +38,16 @@ else
         <tbody>
             @foreach (var car in cars)
             {
-                <tr>
-                    <td><img src="@car.ImageUrl"  width="100px" height="100px"/></td>
+                    <tr @onclick="() => NavigateToEditCar(car)" style="cursor: pointer;">
+                    <td><img src="@car.ImageUrl" width="100px" height="100px"/></td>
                     <td>@car.RegistrationNumber</td>
                     <td>@car.Make</td>
                     <td>@ModelsDisplayNames.GetDisplayName(car.Model)</td>
                     <td>@car.Type</td>
                     <td>@car.Color</td>
+                    <td>
+                        <button @onclick="() => DeleteCarAsync(car.RegistrationNumber)" class="btn btn-danger">Delete</button>
+                    </td>
                 </tr>
             }
         </tbody>
@@ -62,7 +61,8 @@ else
     protected override async Task OnInitializedAsync()
     {
         var query = new Uri(NavManager.Uri).Query;
-        if (query.Contains("car-added")) {
+        if (query.Contains("car-added"))
+        {
             // Show snackbar
             isCarAdded = true;
 
@@ -73,5 +73,26 @@ else
         var serverUrl = "http://localhost:5098";
         cars = await Http.GetFromJsonAsync<CarDto[]>($"{serverUrl}/cars/all");
     }
+
+    private async Task DeleteCarAsync(string RegistrationNumber) //TODO: Implementation of the method missing
+    {
+            /*var serverUrl = "http://localhost:5098";
+            var response = await Http.DeleteAsync($"{serverUrl}/cars/{RegistrationNumber}");
+
+            if (response.IsSuccessStatusCode)
+            {
+                cars = cars?.Where(c => c.RegistrationNumber != RegistrationNumber).ToArray();
+            }
+            else
+            {
+                Console.WriteLine($"Car could not be deleted");
+            }*/
+        }
+
+    private void NavigateToEditCar(CarDto car)
+    {
+        NavManager.NavigateTo($"/edit-car/{car.RegistrationNumber}");
+    }
+
 
 }

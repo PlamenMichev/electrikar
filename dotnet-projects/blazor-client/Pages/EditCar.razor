@@ -142,6 +142,12 @@
         makeInput = car?.Make ?? default;
         modelInput = car?.Model ?? default;
         carTypeInput = car?.Type ?? default;
+
+        if (car == null)
+        {
+            NavManager.NavigateTo($"/cars-list");
+        }
+       
     }
 
     private async Task LoadFile(InputFileChangeEventArgs e) { 
