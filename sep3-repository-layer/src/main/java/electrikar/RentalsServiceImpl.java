@@ -94,6 +94,37 @@ public class RentalsServiceImpl
     }
   }
 
+  @Override
+  public void getRental(GetRentalRequest request, StreamObserver<GetRentalResponse> responseObserver)
+  {
+    try
+    {
+      var rentalDao = SqlRentalDao.getInstance();
+      var rental = rentalDao.getRentalById((int)request.getId());
+
+      if (rental != null)
+      {
+        var rentalProto = GetRentalResponse.newBuilder()
+            .setId(rental.getId())
+            .setCarRegNumber(rental.getCarRegNumber())
+            .setUserId(rental.getUserId())
+            .setStartDate(rental.getStartDate().getTime())
+            .setEndDate(rental.getEndDate().getTime())
+            .build();
+        responseObserver.onNext(rentalProto);
+      }
+      else
+      {
+        responseObserver.onNext(GetRentalResponse.newBuilder().build());
+      }
+      responseObserver.onCompleted();
+    }
+    catch (Exception e)
+    {
+      e.printStackTrace();
+    }
+  }
+
 
 
 }

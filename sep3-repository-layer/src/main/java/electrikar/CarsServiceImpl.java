@@ -83,7 +83,6 @@ public class CarsServiceImpl extends CarsServiceGrpc.CarsServiceImplBase {
 
             var carsList = CarsList.newBuilder();
             for (var car : cars) {
-                var base64Encoded = Base64.getEncoder().encodeToString(car.getImage());
                 var carProto = CreateCarResponse.newBuilder()
                         .setRegNumber(car.getReg_number())
                         .setColor(car.getColor().ordinal())

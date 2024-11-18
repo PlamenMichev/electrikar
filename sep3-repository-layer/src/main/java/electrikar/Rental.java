@@ -38,8 +38,8 @@ public class Rental
     this.userId = userId;
     this.startDate = startDate;
     this.endDate = endDate;
-    dropDate = null;
-    status = RentalStatus.PENDING;
+    dropDate = endDate;
+    status = RentalStatus.valueOf(0);
     customerComment = null;
     organizerComment = null;
   }
