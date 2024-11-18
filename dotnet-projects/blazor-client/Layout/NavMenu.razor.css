@@ -38,6 +38,7 @@
   background-repeat: no-repeat no-repeat;
   background-position: center center;
   background-size: cover;
+  fill: white;
 }
 
 .nav-item {

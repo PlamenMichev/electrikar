@@ -1,0 +1,176 @@
+@page "/add-rental"
+@using shared.Enums
+@using shared.Models
+@inject HttpClient Http
+@inject NavigationManager NavManager
+
+<PageTitle>Add Car</PageTitle>
+
+<form @onsubmit="Submit" class="row">
+    <div class="form-group col-xs-12 col-md-6">
+        <label for="startDateInput">Start date</label>
+        <input type="datetime-local"
+               @bind="startDateInput"
+               class="@(!string.IsNullOrEmpty(startDateInputErrorMessage) ? "is-invalid form-control" : "form-control")"
+               id="startDateInput">
+        <div class="@(!string.IsNullOrEmpty(startDateInputErrorMessage) ? "invalid-feedback" : "feedback")">
+            @(startDateInputErrorMessage ?? "")
+        </div>
+    </div>
+    
+    <div class="form-group col-xs-12 col-md-6">
+        <label for="endDateInput">End date</label>
+        <input type="datetime-local"
+               @bind="endDateInput"
+               class="@(!string.IsNullOrEmpty(endDateInputErrorMessage) ? "is-invalid form-control" : "form-control")"
+               id="endDateInput">
+        <div class="@(!string.IsNullOrEmpty(endDateInputErrorMessage) ? "invalid-feedback" : "feedback")">
+            @(endDateInputErrorMessage ?? "")
+        </div>
+    </div>
+    
+    <div class="form-group col-xs-12 col-md-6 mb-4">
+        <label for="carInput">Car</label> 
+        <select @bind="carInput" class="form-control" id="makeInput">
+            @foreach (var car in cars) // TODO: auto select car from car list
+            {
+                <option value="@car.RegistrationNumber">@car.Type, @car.Make</option> // TODO: Disable unavailable cars
+            }
+        </select>
+    </div>
+    
+    <div class="form-group col-xs-12 col-md-6">
+        <label for="userIdInput">User</label>
+        <input @bind="userIdInput" class="@(!string.IsNullOrEmpty(userIdInputErrorMessage)? "is-invalid form-control" : "form-control")" placeholder="user id" id="userIdInput">
+        <div class="@(!string.IsNullOrEmpty(userIdInputErrorMessage)? "invalid-feedback" : "feedback")">
+            @(userIdInputErrorMessage ?? "")
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col">
+            <div class="text-end">
+                <button disabled="@isSubmitting"  type="submit" class="btn btn-primary mt-2 pull-right" style="width: 100px">
+                    @if (isSubmitting)
+                    {
+                        <div class="spinner-border text-white" role="status" />
+                    }
+                    else {
+                        <span>Submit</span>
+                    }
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!--
+    <div class="form-group col-xs-12 col-md-6 mb-4">
+        <label for="statusInput">Status</label>
+        <select @bind="statusInput" class="form-control" id="statusInput">
+            <option value="0">OPTION 1</option>
+            <option value="1">OPTION 2</option>
+            <option value="2">OPTION 3</option>
+        </select>
+    </div>
+    -->
+</form>
+
+
+@code {
+    private DateTime? startDateInput;
+    private string startDateInputErrorMessage;
+    
+    private DateTime? endDateInput;
+    private string endDateInputErrorMessage;
+    
+    private CarDto[]? cars;
+    private string carInput;
+    
+    private string? userIdInput;
+    private string userIdInputErrorMessage;
+
+    // private int statusInput; TODO: Status input
+    
+    private bool isFileLoading;
+    private bool isSubmitting;
+    
+    protected override async Task OnInitializedAsync()
+    {
+        var serverUrl = "http://localhost:5098";
+        cars = await Http.GetFromJsonAsync<CarDto[]>($"{serverUrl}/cars/all");
+        
+        // Get users
+    }
+    
+    private async Task Submit()
+    {   
+        if (isSubmitting) return;
+
+        isSubmitting = true;
+        var isFormValid = ValidateInputs();
+        if (!isFormValid)
+        {
+            isSubmitting = false;
+            return;
+        } 
+        
+        <!--
+        var rental = new Rental
+        {
+            // TODO: New rental
+        }
+        -->
+        
+        var serverUrl = "http://localhost:5098";
+        // await Http.PostAsJsonAsync($"{serverUrl}/rentals", rental);
+        isSubmitting = false;
+        NavManager.NavigateTo("");
+    }
+
+    private bool ValidateInputs()
+    {
+        bool validated = true;
+        
+        if (string.IsNullOrEmpty(startDateInput.ToString())) {
+            startDateInputErrorMessage = "Please select a valid date and time.";
+            validated = false;
+        }
+        else
+        {
+            startDateInputErrorMessage = string.Empty;
+        }
+        
+        if (string.IsNullOrEmpty(endDateInput.ToString())) {
+            endDateInputErrorMessage = "Please select a valid date and time.";
+            validated = false;
+        }
+        else
+        {
+            endDateInputErrorMessage = string.Empty;
+        }
+
+        if (startDateInput > endDateInput)
+        {
+            startDateInputErrorMessage = "Start date must be earlier than end date";
+            endDateInputErrorMessage = "Start date must be earlier than end date";
+            validated = false;
+        }
+        
+        if (string.IsNullOrEmpty(userIdInput)) {
+            userIdInputErrorMessage = "Please select a valid user.";
+            validated = false;
+        }
+        else if (false) // TODO: Make sure user exists
+        {
+            userIdInputErrorMessage = "This user does not exist";
+            validated = false;
+        }
+        else
+        {
+            userIdInputErrorMessage = string.Empty;
+        }
+        
+        
+        return validated;
+    }
+}
