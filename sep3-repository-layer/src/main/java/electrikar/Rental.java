@@ -6,7 +6,7 @@ import java.sql.Timestamp;
 
 public class Rental
 {
-  private int id;
+  private long id;
   private String carRegNumber;
   private int userId;
   private Timestamp startDate;
@@ -17,7 +17,7 @@ public class Rental
   public String organizerComment;
 
 
-  public Rental(int id, String carRegNumber, int userId, Timestamp startDate, Timestamp endDate, Timestamp dropDate, RentalStatus status)
+  public Rental(long id, String carRegNumber, int userId, Timestamp startDate, Timestamp endDate, Timestamp dropDate, RentalStatus status, String customerComment, String organizerComment)
   {
     this.id = id;
     this.carRegNumber = carRegNumber;
@@ -26,17 +26,30 @@ public class Rental
     this.endDate = endDate;
     this.dropDate = dropDate;
     this.status = status;
-    customerComment = "";
-    organizerComment = "";
+    this.customerComment = customerComment;
+    this.organizerComment = organizerComment;
 
   }
 
-  public int getId()
+  public Rental(long id, String carRegNumber, int userId, Timestamp startDate, Timestamp endDate)
+  {
+    this.id = id;
+    this.carRegNumber = carRegNumber;
+    this.userId = userId;
+    this.startDate = startDate;
+    this.endDate = endDate;
+    dropDate = endDate;
+    status = RentalStatus.valueOf(0);
+    customerComment = null;
+    organizerComment = null;
+  }
+
+  public long getId()
   {
     return id;
   }
 
-  public void setId(int id)
+  public void setId(long id)
   {
     this.id = id;
   }
@@ -65,6 +78,11 @@ public class Rental
   {
     return startDate;
   }
+  public long getStartDateLong()
+  {
+    return startDate.getTime();
+  }
+
 
   public void setStartDate(Timestamp startDate)
   {
@@ -76,6 +94,11 @@ public class Rental
     return endDate;
   }
 
+  public long getEndDateLong()
+  {
+    return endDate.getTime();
+  }
+
   public void setEndDate(Timestamp endDate)
   {
     this.endDate = endDate;
@@ -84,6 +107,11 @@ public class Rental
   public Timestamp getDropDate()
   {
     return dropDate;
+  }
+
+  public long getDropDateLong()
+  {
+    return dropDate.getTime();
   }
 
   public void setDropDate(Timestamp dropDate)
@@ -120,6 +148,7 @@ public class Rental
   {
     this.organizerComment = organizerComment;
   }
+
 
 
 }

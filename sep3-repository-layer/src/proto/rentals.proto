@@ -1,0 +1,90 @@
+syntax = "proto3";
+option java_multiple_files = true;
+package org.electrikar.grpc;
+import "cars.proto";
+
+message CreateRentalRequest {
+  int64 id = 1;
+  string carRegNumber = 2;
+  int64 userId = 3;
+  int64 startDate = 4;
+  int64 endDate = 5;
+  int64 dropDate = 6;
+  int64 status = 7;
+  string customerComment = 8;
+  string organizerComment = 9;
+}
+
+message CreateRentalResponse {
+  int64 id = 1;
+  string carRegNumber = 2;
+  int64 userId = 3;
+  int64 startDate = 4;
+  int64 endDate = 5;
+  int64 dropDate = 6;
+  int64 status = 7;
+  string customerComment = 8;
+  string organizerComment = 9;
+}
+
+
+
+message UpdateRentalRequest {
+  int64 id = 1;
+  string carRegNumber = 2;
+  int64 userId = 3;
+  int64 startDate = 4;
+  int64 endDate = 5;
+  int64 dropDate = 6;
+  int64 status = 7;
+  string customerComment = 8;
+  string organizerComment = 9;
+}
+
+message UpdateRentalResponse {
+  int64 id = 1;
+  string carRegNumber = 2;
+  int64 userId = 3;
+  int64 startDate = 4;
+  int64 endDate = 5;
+  int64 dropDate = 6;
+  int64 status = 7;
+  string customerComment = 8;
+  string organizerComment = 9;
+}
+
+message DeleteRentalRequest {
+  int64 id = 1;
+}
+
+message DeleteRentalResponse {
+  int64 id = 1;
+}
+
+message RentalsList {
+  repeated CreateRentalResponse rentals = 1;
+}
+
+message GetRentalRequest {
+  int64 id = 1;
+}
+
+message GetRentalResponse {
+  int64 id = 1;
+  string carRegNumber = 2;
+  int64 userId = 3;
+  int64 startDate = 4;
+  int64 endDate = 5;
+  int64 dropDate = 6;
+  int64 status = 7;
+  string customerComment = 8;
+  string organizerComment = 9;
+}
+
+service RentalsService {
+  rpc create(CreateRentalRequest) returns (CreateRentalResponse);
+  rpc getAllRentals(Empty) returns (RentalsList);
+  rpc updateRental(UpdateRentalRequest) returns (UpdateRentalResponse);
+  rpc deleteRental(DeleteRentalRequest) returns (DeleteRentalResponse);
+  rpc getRental(GetRentalRequest) returns (GetRentalResponse);
+}
