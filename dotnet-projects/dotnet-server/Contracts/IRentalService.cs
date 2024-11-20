@@ -4,9 +4,9 @@ namespace dotnet_server.Contracts;
 
 public interface IRentalService
 {
-    Task<CarDto> CreateRentalAsync(Car car);
-    Task<IEnumerable<CarDto>> GetRentalsAsync();
-    Task<CarDto> GetRentalAsync(int id);
-    Task<CarDto> UpdateRentalAsync(int id, Car car);
+    Task<RentalDto> CreateRentalAsync(RentalDto rental);
+    Task<IEnumerable<RentalDto>> GetRentalsAsync();
+    Task<RentalDto> GetRentalAsync(int id);
+    Task<RentalDto> UpdateRentalAsync(int id, RentalDto rentalDto);
     Task DeleteRentalAsync(int id);
 }
