@@ -19,7 +19,7 @@ message CreateRentalRequest {
 message CreateRentalResponse {
   int64 id = 1;
   string carRegNumber = 2;
-  int64 userId = 3;
+  int32 userId = 3;
   int64 startDate = 4;
   int64 endDate = 5;
   int64 dropDate = 6;

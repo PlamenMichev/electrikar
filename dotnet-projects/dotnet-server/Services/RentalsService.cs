@@ -14,16 +14,8 @@ namespace dotnet_server.Services
 {
     public class RentalsService : IRentalService
     {
-        private readonly ICloudinaryService _cloudinaryService;
-        private readonly RentalsService.RentalsServiceClient _client;
-
-        public RentalsService(ICloudinaryService cloudinaryService)
-        {
-            _cloudinaryService = cloudinaryService;
-            var channel = GrpcConnector.ConnectRentalServiceAsync();
-            _client = new RentalsService.RentalsServiceClient(channel);
-        }
-
+        
+        
         public async Task<RentalDto> CreateRentalAsync(RentalDto rental)
         {
             var request = new CreateRentalRequest
@@ -38,12 +30,13 @@ namespace dotnet_server.Services
                 OrganizerComment = rental.OrganizerComment
             };
 
-            var response = await _client.CreateAsync(request);
+            var client = GrpcConnector.ConnectRentalServiceAsync();
+            var response = await client.CreateAsync(request);
             return new RentalDto
             {
                 Id = response.Id,
                 CarRegNumber = response.CarRegNumber,
-                UserId = response.UserId,
+                UserId = (int)response.UserId,
                 StartDate = DateTimeOffset.FromUnixTimeSeconds(response.StartDate),
                 EndDate = DateTimeOffset.FromUnixTimeSeconds(response.EndDate),
                 DropDate = DateTimeOffset.FromUnixTimeSeconds(response.DropDate),
@@ -55,12 +48,13 @@ namespace dotnet_server.Services
 
         public async Task<IEnumerable<RentalDto>> GetRentalsAsync()
         {
-            var response = await _client.GetAllRentalsAsync(new Empty());
+            var client = GrpcConnector.ConnectRentalServiceAsync();
+            var response = await client.GetAllRentalsAsync(new Google.Protobuf.WellKnownTypes.Empty());
             return response.Rentals.Select(r => new RentalDto
             {
                 Id = r.Id,
                 CarRegNumber = r.CarRegNumber,
-                UserId = r.UserId,
+                UserId = (int)r.UserId,
                 StartDate = DateTimeOffset.FromUnixTimeSeconds(r.StartDate),
                 EndDate = DateTimeOffset.FromUnixTimeSeconds(r.EndDate),
                 DropDate = DateTimeOffset.FromUnixTimeSeconds(r.DropDate),
@@ -73,12 +67,13 @@ namespace dotnet_server.Services
         public async Task<RentalDto> GetRentalAsync(int id)
         {
             var request = new GetRentalRequest { Id = id };
-            var response = await _client.GetRentalAsync(request);
+            var client = GrpcConnector.ConnectRentalServiceAsync();
+            var response = await client.GetRentalAsync(request);
             return new RentalDto
             {
                 Id = response.Id,
                 CarRegNumber = response.CarRegNumber,
-                UserId = response.UserId,
+                UserId = (int)response.UserId,
                 StartDate = DateTimeOffset.FromUnixTimeSeconds(response.StartDate),
                 EndDate = DateTimeOffset.FromUnixTimeSeconds(response.EndDate),
                 DropDate = DateTimeOffset.FromUnixTimeSeconds(response.DropDate),
@@ -102,13 +97,14 @@ namespace dotnet_server.Services
                 CustomerComment = rental.CustomerComment,
                 OrganizerComment = rental.OrganizerComment
             };
-
-            var response = await _client.UpdateRentalAsync(request);
+            
+            var client = GrpcConnector.ConnectRentalServiceAsync();
+            var response = await client.UpdateRentalAsync(request);
             return new RentalDto
             {
                 Id = response.Id,
                 CarRegNumber = response.CarRegNumber,
-                UserId = response.UserId,
+                UserId = (int)response.UserId,
                 StartDate = DateTimeOffset.FromUnixTimeSeconds(response.StartDate),
                 EndDate = DateTimeOffset.FromUnixTimeSeconds(response.EndDate),
                 DropDate = DateTimeOffset.FromUnixTimeSeconds(response.DropDate),
@@ -120,8 +116,9 @@ namespace dotnet_server.Services
 
         public async Task DeleteRentalAsync(int id)
         {
+            var client = GrpcConnector.ConnectRentalServiceAsync();
             var request = new DeleteRentalRequest { Id = id };
-            await _client.DeleteRentalAsync(request);
+            await client.DeleteRentalAsync(request);
         }
     }
 }
