@@ -1,9 +1,7 @@
 syntax = "proto3";
-option java_multiple_files = true;
 option csharp_namespace = "RepositoryGrpcService";
 package org.electrikar.grpc;
 
-import "cars.proto";
 import "google/protobuf/empty.proto";
 
 message CreateRentalRequest {
@@ -83,9 +81,9 @@ message GetRentalResponse {
 }
 
 service RentalsService {
-  rpc create(CreateRentalRequest) returns (CreateRentalResponse);
-  rpc getAllRentals(google.protobuf.Empty) returns (RentalsList);
-  rpc updateRental(UpdateRentalRequest) returns (UpdateRentalResponse);
-  rpc deleteRental(DeleteRentalRequest) returns (DeleteRentalResponse);
-  rpc getRental(GetRentalRequest) returns (GetRentalResponse);
+  rpc Create(CreateRentalRequest) returns (CreateRentalResponse);
+  rpc GetAllRentals(google.protobuf.Empty) returns (RentalsList);
+  rpc UpdateRental(UpdateRentalRequest) returns (UpdateRentalResponse);
+  rpc DeleteRental(DeleteRentalRequest) returns (DeleteRentalResponse);
+  rpc GetRental(GetRentalRequest) returns (GetRentalResponse);
 }
