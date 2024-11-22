@@ -1,20 +1,40 @@
 using Grpc.Net.Client;
 using static RepositoryGrpcService.CarsService;
+using static RepositoryGrpcService.RentalsService;
 
-namespace dotnet_server.grpc;
-
-public static class GrpcConnector
+namespace dotnet_server.grpc
 {
-    public static CarsServiceClient ConnectCarServiceAsync()
+    public static class GrpcConnector
     {
-        using var channel = GrpcChannel.ForAddress("http://localhost:8080");
-        var client = new RepositoryGrpcService.CarsService.CarsServiceClient(channel);
-
-        if (client == null)
+        private static GrpcChannel CreateChannel()
         {
-            throw new Exception("Could not connect to the gRPC server");
+            return GrpcChannel.ForAddress("http://localhost:8080");
         }
 
-        return client;
+        public static CarsServiceClient ConnectCarServiceAsync()
+        {
+            var channel = CreateChannel();
+            var client = new CarsServiceClient(channel);
+
+            if (client == null)
+            {
+                throw new Exception("Could not connect to the gRPC server");
+            }
+
+            return client;
+        }
+
+        public static RentalsServiceClient ConnectRentalServiceAsync()
+        {
+            var channel = CreateChannel();
+            var client = new RentalsServiceClient(channel);
+
+            if (client == null)
+            {
+                throw new Exception("Could not connect to the gRPC server");
+            }
+
+            return client;
+        }
     }
 }
