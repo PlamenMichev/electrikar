@@ -26,8 +26,8 @@ namespace dotnet_server.Services
                 EndDate = rental.EndDate.ToUnixTimeSeconds(),
                 DropDate = rental.DropDate.ToUnixTimeSeconds(),
                 Status = (int)rental.Status,
-                CustomerComment = rental.CustomerComment,
-                OrganizerComment = rental.OrganizerComment
+                CustomerComment = null,
+                OrganizerComment = null
             };
 
             var client = GrpcConnector.ConnectRentalServiceAsync();
@@ -41,8 +41,8 @@ namespace dotnet_server.Services
                 EndDate = DateTimeOffset.FromUnixTimeSeconds(response.EndDate),
                 DropDate = DateTimeOffset.FromUnixTimeSeconds(response.DropDate),
                 Status = (RentalStatus)response.Status,
-                CustomerComment = response.CustomerComment,
-                OrganizerComment = response.OrganizerComment
+                CustomerComment = null,
+                OrganizerComment = null
             };
         }
 
