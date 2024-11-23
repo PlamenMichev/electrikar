@@ -42,7 +42,7 @@ public class RentalController : ControllerBase
     }
 
     [HttpPut("{id}")]
-    public async Task<ActionResult<CarDto>> Update([FromRoute] int id, [FromBody] RentalDto rental)
+    public async Task<ActionResult<RentalDto>> Update([FromRoute] int id, [FromBody] RentalDto rental) //TODO: Task<ActionResult<CarDto>> Shouldnt it be RentalDto?? -Mario
     {
         var response = await _rentalService.UpdateRentalAsync(id, rental);
         if (response == null)

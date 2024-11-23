@@ -1,8 +1,10 @@
 @page "/add-rental"
+@using blazor_client.Contacts
 @using shared.Enums
 @using shared.Models
 @inject HttpClient Http
 @inject NavigationManager NavManager
+@inject IApiService apiService;
 
 <PageTitle>Add Car</PageTitle>
 
@@ -103,17 +105,32 @@
         {
             isSubmitting = false;
             return;
-        } 
-        
-        <!--
-        var rental = new Rental
-        {
-            // TODO: New rental
         }
-        -->
+
+
+        var rental = new RentalDto
+        {
+            CarRegNumber = "SDLF12K",
+            StartDate = new DateTimeOffset((DateTime)startDateInput),
+            EndDate = new DateTimeOffset((DateTime)endDateInput),
+            // UserId = userIdInput; TODO: Isnt this a string?
+            // CustomerComment
+            // OrganizerComment
+        };
+        
+        var serverErrorMessage = await apiService.AddRentalAsync(rental);
+
+        // TODO: Do server error message handling
+        if (!string.IsNullOrEmpty(serverErrorMessage))
+        {
+            isSubmitting = false;
+            return;
+        }
+
+        isSubmitting = false;
         
         var serverUrl = "http://localhost:5098";
-        // await Http.PostAsJsonAsync($"{serverUrl}/rentals", rental);
+        await Http.PostAsJsonAsync($"{serverUrl}/rentals", rental);
         isSubmitting = false;
         NavManager.NavigateTo("");
     }
