@@ -14,6 +14,7 @@ builder.Services.AddSwaggerGen();
 var corsPolicyName = "AllowBlazorClient";
 
 builder.Services.AddTransient<ICarsService, CarsService>();
+builder.Services.AddTransient<IRentalService, RentalsService>();
 builder.Services.AddSingleton<ICloudinaryService, CloudinaryService>();
 
 builder.Services.AddCors(options =>
