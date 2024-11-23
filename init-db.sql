@@ -35,3 +35,5 @@ CREATE TABLE "Rental"(
     FOREIGN KEY (customer_id) REFERENCES "User"(id)
 );
  INSERT INTO "Car"(reg_num, color, model, make, type, price, image) VALUES ('SDLF12K', '1', '2', '1', 3, 0,'afsdfasd');
+
+SELECT * FROM "Rental";
