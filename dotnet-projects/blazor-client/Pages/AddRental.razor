@@ -75,7 +75,7 @@
     private string? endDateInputErrorMessage;
     
     private List<CarDto> cars = new List<CarDto>();
-    private string? carInput;
+    private string carInput = string.Empty;
     
     private string? userIdInput;
     private string? userIdInputErrorMessage;
@@ -87,9 +87,12 @@
         var serverUrl = "http://localhost:5098";
         var parsedCars = await Http.GetFromJsonAsync<List<CarDto>>($"{serverUrl}/cars/all");
 
+        // If there are no cars go to the add car page
+
         if (parsedCars != null)
         {
             cars = parsedCars;
+            carInput = cars.First().RegistrationNumber;
         }
         
         // Get users
@@ -111,11 +114,9 @@
         var rental = new RentalDto
         {
             CarRegNumber = carInput,
-            StartDate = new DateTimeOffset((DateTime)startDateInput),
-            EndDate = new DateTimeOffset((DateTime)endDateInput),
-            UserId = 1,
-            // CustomerComment
-            // OrganizerComment
+            StartDate = new DateTimeOffset(startDateInput!.Value),
+            EndDate = new DateTimeOffset(endDateInput!.Value),
+            UserId = int.Parse(userIdInput!),
         };
         
         var serverErrorMessage = await apiService.AddRentalAsync(rental);
@@ -134,6 +135,8 @@
     private bool ValidateInputs()
     {
         bool validated = true;
+
+        // Check if car is empty string
         
         if (string.IsNullOrEmpty(startDateInput.ToString())) {
             startDateInputErrorMessage = "Please select a valid date and time.";
