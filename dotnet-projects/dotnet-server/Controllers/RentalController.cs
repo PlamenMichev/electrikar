@@ -35,16 +35,16 @@ public class RentalController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<ActionResult<CarDto>> Create([FromBody] Car car)
+    public async Task<ActionResult<CarDto>> Create([FromBody] RentalDto rental)
     {
-        var response = await _rentalService.CreateRentalAsync(car);
+        var response = await _rentalService.CreateRentalAsync(rental);
         return CreatedAtAction(nameof(GetById), new { id = 1 }, response);
     }
 
     [HttpPut("{id}")]
-    public async Task<ActionResult<CarDto>> Update([FromRoute] int id, [FromBody] Car car)
+    public async Task<ActionResult<RentalDto>> Update([FromRoute] int id, [FromBody] RentalDto rental) //TODO: Task<ActionResult<CarDto>> Shouldnt it be RentalDto?? -Mario
     {
-        var response = await _rentalService.UpdateRentalAsync(id, car);
+        var response = await _rentalService.UpdateRentalAsync(id, rental);
         if (response == null)
         {
             return NotFound();
