@@ -1,37 +1,34 @@
-using dotnet_server.Contracts;
-using Grpc.Net.Client;
-using RepositoryGrpcService;
-using shared.Models;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using dotnet_server.Contracts;
 using dotnet_server.grpc;
 using Google.Protobuf.WellKnownTypes;
+using Grpc.Net.Client;
+using RepositoryGrpcService;
 using shared.Enums;
-using Empty = RepositoryGrpcService.Empty;
+using shared.Models;
 
 namespace dotnet_server.Services
 {
     public class RentalsService : IRentalService
     {
-        
-        
         public async Task<RentalDto> CreateRentalAsync(RentalDto rental)
         {
             var request = new CreateRentalRequest
             {
                 CarRegNumber = rental.CarRegNumber,
                 UserId = rental.UserId,
-                StartDate = rental.StartDate.ToUnixTimeSeconds(),
-                EndDate = rental.EndDate.ToUnixTimeSeconds(),
-                DropDate = rental.DropDate.ToUnixTimeSeconds(),
+                StartDate = rental.StartDate.ToUnixTimeMilliseconds(),
+                EndDate = rental.EndDate.ToUnixTimeMilliseconds(),
+                DropDate = rental.DropDate.ToUnixTimeMilliseconds(),
                 Status = (int)rental.Status,
-                CustomerComment = null,
-                OrganizerComment = null
+                CustomerComment = rental.CustomerComment ?? string.Empty,
+                OrganizerComment = rental.OrganizerComment ?? string.Empty,
             };
 
             var client = GrpcConnector.ConnectRentalServiceAsync();
-            var response = await client.CreateAsync(request);
+            var response = await client.createAsync(request);
             return new RentalDto
             {
                 Id = response.Id,
@@ -49,7 +46,7 @@ namespace dotnet_server.Services
         public async Task<IEnumerable<RentalDto>> GetRentalsAsync()
         {
             var client = GrpcConnector.ConnectRentalServiceAsync();
-            var response = await client.GetAllRentalsAsync(new Google.Protobuf.WellKnownTypes.Empty());
+            var response = await client.getAllRentalsAsync(new EmptyRental());
             return response.Rentals.Select(r => new RentalDto
             {
                 Id = r.Id,
@@ -68,7 +65,7 @@ namespace dotnet_server.Services
         {
             var request = new GetRentalRequest { Id = id };
             var client = GrpcConnector.ConnectRentalServiceAsync();
-            var response = await client.GetRentalAsync(request);
+            var response = await client.getRentalAsync(request);
             return new RentalDto
             {
                 Id = response.Id,
@@ -97,9 +94,9 @@ namespace dotnet_server.Services
                 CustomerComment = rental.CustomerComment,
                 OrganizerComment = rental.OrganizerComment
             };
-            
+
             var client = GrpcConnector.ConnectRentalServiceAsync();
-            var response = await client.UpdateRentalAsync(request);
+            var response = await client.updateRentalAsync(request);
             return new RentalDto
             {
                 Id = response.Id,
@@ -118,7 +115,7 @@ namespace dotnet_server.Services
         {
             var client = GrpcConnector.ConnectRentalServiceAsync();
             var request = new DeleteRentalRequest { Id = id };
-            await client.DeleteRentalAsync(request);
+            await client.deleteRentalAsync(request);
         }
     }
 }

@@ -27,7 +27,7 @@ public class ApiService : IApiService
             return ex.Message;
         }
     }
-    
+
     public async Task<string?> AddRentalAsync(RentalDto rental)
     {
         try

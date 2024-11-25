@@ -9,6 +9,6 @@ public class DatabaseConnector {
     return DriverManager.getConnection(
             "jdbc:postgresql://localhost:5432/postgres?currentSchema=electrikar",
             "postgres",
-            "ViaPassword");
+            "Plamen123");
   }
 }

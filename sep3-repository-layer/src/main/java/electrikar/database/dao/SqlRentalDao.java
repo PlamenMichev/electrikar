@@ -56,7 +56,11 @@ public class SqlRentalDao implements RentalDao {
 
       }
     }
-
+    catch (SQLException e)
+    {
+      e.printStackTrace();
+      return null;
+    }
   }
 
   @Override public void updateRental(Rental rental) throws SQLException

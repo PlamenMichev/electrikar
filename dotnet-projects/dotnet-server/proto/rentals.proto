@@ -2,8 +2,6 @@ syntax = "proto3";
 option csharp_namespace = "RepositoryGrpcService";
 package org.electrikar.grpc;
 
-import "google/protobuf/empty.proto";
-
 message CreateRentalRequest {
   int64 id = 1;
   string carRegNumber = 2;
@@ -19,7 +17,7 @@ message CreateRentalRequest {
 message CreateRentalResponse {
   int64 id = 1;
   string carRegNumber = 2;
-  int32 userId = 3;
+  int64 userId = 3;
   int64 startDate = 4;
   int64 endDate = 5;
   int64 dropDate = 6;
@@ -80,10 +78,14 @@ message GetRentalResponse {
   string organizerComment = 9;
 }
 
+message EmptyRental {
+}
+
+
 service RentalsService {
-  rpc Create(CreateRentalRequest) returns (CreateRentalResponse);
-  rpc GetAllRentals(google.protobuf.Empty) returns (RentalsList);
-  rpc UpdateRental(UpdateRentalRequest) returns (UpdateRentalResponse);
-  rpc DeleteRental(DeleteRentalRequest) returns (DeleteRentalResponse);
-  rpc GetRental(GetRentalRequest) returns (GetRentalResponse);
+  rpc create(CreateRentalRequest) returns (CreateRentalResponse);
+  rpc getAllRentals(EmptyRental) returns (RentalsList);
+  rpc updateRental(UpdateRentalRequest) returns (UpdateRentalResponse);
+  rpc deleteRental(DeleteRentalRequest) returns (DeleteRentalResponse);
+  rpc getRental(GetRentalRequest) returns (GetRentalResponse);
 }

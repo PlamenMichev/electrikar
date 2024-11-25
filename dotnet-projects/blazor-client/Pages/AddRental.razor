@@ -110,10 +110,10 @@
 
         var rental = new RentalDto
         {
-            CarRegNumber = "SDLF12K",
+            CarRegNumber = carInput,
             StartDate = new DateTimeOffset((DateTime)startDateInput),
             EndDate = new DateTimeOffset((DateTime)endDateInput),
-            // UserId = userIdInput; TODO: Isnt this a string?
+            UserId = 1,
             // CustomerComment
             // OrganizerComment
         };
@@ -127,10 +127,6 @@
             return;
         }
 
-        isSubmitting = false;
-        
-        var serverUrl = "http://localhost:5098";
-        await Http.PostAsJsonAsync($"{serverUrl}/rentals", rental);
         isSubmitting = false;
         NavManager.NavigateTo("");
     }
