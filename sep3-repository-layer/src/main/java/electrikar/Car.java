@@ -16,6 +16,7 @@ public class Car
   private CarType type;
   private int price;
   private String image;
+  private boolean isRented;
 
   public Car(String reg_number, CarColor color,  CarMake make, CarModel model,
       CarType type, int price, String image)
@@ -98,6 +99,14 @@ public class Car
   public void setImage(String image)
   {
     this.image = image;
+  }
+  public void setRented(boolean rented)
+  {
+    isRented = rented;
+  }
+  public boolean checkRent()
+  {
+    return isRented;
   }
 
   public String toString() {
