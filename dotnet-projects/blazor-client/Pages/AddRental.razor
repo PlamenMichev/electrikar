@@ -33,18 +33,24 @@
     
     <div class="form-group col-xs-12 col-md-6 mb-4">
         <label for="carInput">Car</label> 
-        <select @bind="carInput" class="form-control" id="makeInput">
+        <select @bind="carInput" class="@(!string.IsNullOrEmpty(carInputErrorMessage)? "is-invalid form-control" : "form-control")" id="makeInput">
             @foreach (var car in cars)
             {
                 <option value="@car.RegistrationNumber">@car.Type, @car.Make</option> // TODO: Disable unavailable cars
             }
         </select>
+        <div class="@(!string.IsNullOrEmpty(carInputErrorMessage)? "invalid-feedback" : "feedback")">
+            @(carInputErrorMessage ?? "")
+        </div>
     </div>
-    
+
     <div class="form-group col-xs-12 col-md-6">
         <label for="userIdInput">User</label>
-        <input @bind="userIdInput" class="@(!string.IsNullOrEmpty(userIdInputErrorMessage)? "is-invalid form-control" : "form-control")" placeholder="user id" id="userIdInput">
-        <div class="@(!string.IsNullOrEmpty(userIdInputErrorMessage)? "invalid-feedback" : "feedback")">
+        <InputNumber @bind-Value="userIdInput"
+                     class="@(!string.IsNullOrEmpty(userIdInputErrorMessage) ? "is-invalid form-control" : "form-control")"
+                     placeholder="Enter user id"
+                     id="userIdInput" />
+        <div class="@(!string.IsNullOrEmpty(userIdInputErrorMessage) ? "invalid-feedback" : "feedback")">
             @(userIdInputErrorMessage ?? "")
         </div>
     </div>
@@ -76,8 +82,9 @@
     
     private List<CarDto> cars = new List<CarDto>();
     private string carInput = string.Empty;
+    private string? carInputErrorMessage;
     
-    private string? userIdInput;
+    private int? userIdInput;
     private string? userIdInputErrorMessage;
     
     private bool isSubmitting;
@@ -87,12 +94,14 @@
         var serverUrl = "http://localhost:5098";
         var parsedCars = await Http.GetFromJsonAsync<List<CarDto>>($"{serverUrl}/cars/all");
 
-        // If there are no cars go to the add car page
-
         if (parsedCars != null)
         {
             cars = parsedCars;
             carInput = cars.First().RegistrationNumber;
+        }
+        else // If there are no cars go to the add car page
+        {
+            NavManager.NavigateTo("/add-car");
         }
         
         // Get users
@@ -116,7 +125,7 @@
             CarRegNumber = carInput,
             StartDate = new DateTimeOffset(startDateInput!.Value),
             EndDate = new DateTimeOffset(endDateInput!.Value),
-            UserId = int.Parse(userIdInput!),
+            UserId = (int)userIdInput!,
         };
         
         var serverErrorMessage = await apiService.AddRentalAsync(rental);
@@ -135,8 +144,20 @@
     private bool ValidateInputs()
     {
         bool validated = true;
+        
+        // CAR VALIDATION
 
-        // Check if car is empty string
+        if (string.IsNullOrEmpty(carInput))
+        {
+            carInputErrorMessage = "Please select a car";
+            validated = false;
+        }
+        else
+        {
+            carInputErrorMessage = string.Empty;
+        }
+        
+        // DATE VALIDATION
         
         if (string.IsNullOrEmpty(startDateInput.ToString())) {
             startDateInputErrorMessage = "Please select a valid date and time.";
@@ -163,8 +184,18 @@
             validated = false;
         }
         
-        if (string.IsNullOrEmpty(userIdInput)) {
-            userIdInputErrorMessage = "Please select a valid user.";
+        var tooEarlyTime = DateTime.Now.AddMinutes(15); // This is current time + 15 minutes
+
+        if (startDateInput < tooEarlyTime)
+        {
+            startDateInputErrorMessage = "Start date is too early";
+            validated = false;
+        }
+        
+        // USER VALIDATION
+        
+        if (userIdInput < 0 || userIdInput == null) {
+            userIdInputErrorMessage = "Please select a valid user ID.";
             validated = false;
         }
         else if (false) // TODO: Make sure user exists
@@ -176,6 +207,8 @@
         {
             userIdInputErrorMessage = string.Empty;
         }
+        
+        // RETURN
         
         return validated;
     }
