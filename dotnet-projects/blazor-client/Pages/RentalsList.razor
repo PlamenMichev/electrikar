@@ -1,0 +1,77 @@
+﻿@page "/rental-list"
+@using shared
+@using shared.Enums
+@using shared.Models
+@inject HttpClient Http
+@inject NavigationManager NavManager
+
+<PageTitle>Rentals</PageTitle>
+
+<h1>Rentals</h1>
+
+<p>Those are the rentals in the system</p>
+
+@if (rental == null)
+{
+    <p><em>Loading...</em></p>
+}
+else if (rental.Length == 0)
+{
+    <p><em>No rental found</em></p>
+}
+else
+{
+    @if(isRentalAdded)
+    {
+        <div class="alert alert-success" role="alert">
+            A new rental has been added successfully!
+        </div>
+    }
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th></th>
+                <th>Registration Number</th>
+                <th>Make</th>
+                <th>Model</th>
+                <th>Type</th>
+                <th>Color</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var rental in rental)
+            {
+                <tr>
+                    <td>@rental.CarRegNumber</td>
+                    <td>@rental.StartDate</td>
+                    <td>@rental.EndDate</td>
+                    <td>@rental.Status</td>
+                    <td>@rental.DropDate</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private RentalDto[]? rental;
+    private bool isRentalAdded;
+
+    protected override async Task OnInitializedAsync()
+    {
+        
+        var query = new Uri(NavManager.Uri).Query;
+        if (query.Contains("rental-added")) {
+            // Show snackbar
+            isRentalAdded = true;
+
+            // Remove the query parameter
+            NavManager.NavigateTo("/rental-list");
+        }
+
+        var serverUrl = "http://localhost:5098";
+        rental = await Http.GetFromJsonAsync<RentalDto[]>($"{serverUrl}/rental/all");
+    }
+
+}
