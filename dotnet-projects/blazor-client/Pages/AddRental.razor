@@ -2,6 +2,9 @@
 @using blazor_client.Contacts
 @using shared.Enums
 @using shared.Models
+@using System;
+@using System.Collections.Generic;
+@using System.Linq;
 @inject HttpClient Http
 @inject NavigationManager NavManager
 @inject IApiService apiService;
@@ -100,10 +103,10 @@
     
     protected override async Task OnInitializedAsync()
     {
-        var serverUrl = "http://localhost:5098";
-        var parsedCars = await Http.GetFromJsonAsync<List<CarDto>>($"{serverUrl}/cars/all"); //TODO: Use api
-
-        if (parsedCars != null)
+        var carArray = await apiService.GetAllCarsAsync();
+        var parsedCars = carArray?.ToList() ?? new List<CarDto>();
+        
+        if (parsedCars.Any())
         {
             cars = parsedCars;
             carInput = cars.First().RegistrationNumber;
