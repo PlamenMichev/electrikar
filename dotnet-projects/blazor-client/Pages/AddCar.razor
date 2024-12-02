@@ -8,170 +8,183 @@
 
 <PageTitle>Add Car</PageTitle>
 
-<form @onsubmit="Submit" class="row">
-  <div class="form-group col-xs-12 col-md-6">
-    <label for="regNumberInput">Registration Number</label>
-    <input @bind="regNumberInput" class="@(!string.IsNullOrEmpty(regNumberInputErrorMessage)? "is-invalid form-control" : "form-control")" placeholder="E1977MK" id="regNumberInput">
-    <div class="@(!string.IsNullOrEmpty(regNumberInputErrorMessage)? "invalid-feedback" : "feedback")">
-        @(regNumberInputErrorMessage ?? "This field should be unique for the whole system")
+<form @onsubmit="Submit" class="row needs-validation" novalidate>
+    <div class="form-group col-xs-12 col-md-6">
+        <label for="regNumberInput">Registration Number</label>
+        <input @bind="regNumberInput" class="@(!string.IsNullOrEmpty(regNumberInputErrorMessage)? "is-invalid form-control" : "form-control")" placeholder="E1977MK" id="regNumberInput" required>
+        <div class="@(!string.IsNullOrEmpty(regNumberInputErrorMessage)? "invalid-feedback" : "feedback")">
+            @(regNumberInputErrorMessage ?? @regNumberInputErrorMessage)
+        </div>
     </div>
-  </div>
 
-  <div class="form-group col-xs-12 col-md-6 mb-4">
-    <label for="colorInput">Color</label>
-    <select @bind="colorInput" class="form-control" id="colorInput">
-        @foreach (var color in Enum.GetValues(typeof(Color)))
-        {
+    <div class="form-group col-xs-12 col-md-6 mb-4">
+        <label for="colorInput">Color</label>
+        <select @bind="colorInput" class="form-control" id="colorInput" required>
+            @foreach (var color in Enum.GetValues(typeof(Color)))
+            {
             <option value="@color">@color</option>
-        }
-    </select>
-  </div>
+            }
+        </select>
+        <div class="invalid-feedback">
+            Please select a color.
+        </div>
+    </div>
 
-  <div class="form-group col-xs-12 col-md-6 mb-4">
-    <label for="makeInput">Make</label>
-    <select @bind="makeInput" class="form-control" id="makeInput">
-        @foreach (var make in Enum.GetValues(typeof(Make)))
-        {
+    <div class="form-group col-xs-12 col-md-6 mb-4">
+        <label for="makeInput">Make</label>
+        <select @bind="makeInput" class="form-control" id="makeInput" required>
+            @foreach (var make in Enum.GetValues(typeof(Make)))
+            {
             <option value="@make">@make</option>
-        }
-    </select>
-  </div>
+            }
+        </select>
+        <div class="invalid-feedback">
+            Please select a make.
+        </div>
+    </div>
 
-  <div class="form-group col-xs-12 col-md-6">
-    <label for="modelInput">Model</label>
-    <select @bind="modelInput" class="form-control" id="modelInput">
-        @foreach (var model in new Model(makeInput).Models)
-        {
+    <div class="form-group col-xs-12 col-md-6">
+        <label for="modelInput">Model</label>
+        <select @bind="modelInput" class="form-control" id="modelInput" required>
+            @foreach (var model in new Model(makeInput).Models)
+            {
             <option value="@model">@ModelsDisplayNames.GetDisplayName(model)</option>
-        }
-    </select>
-  </div>
+            }
+        </select>
+        <div class="invalid-feedback">
+            Please select a model.
+        </div>
+    </div>
 
-  <div class="form-group col-xs-12 col-md-6">
-    <label for="carTypeInput">Type</label>
-    <select @bind="carTypeInput" class="form-control" id="carTypeInput">
-        @foreach (var carType in Enum.GetValues(typeof(CarType)))
-        {
+    <div class="form-group col-xs-12 col-md-6">
+        <label for="carTypeInput">Type</label>
+        <select @bind="carTypeInput" class="form-control" id="carTypeInput" required>
+            @foreach (var carType in Enum.GetValues(typeof(CarType)))
+            {
             <option value="@carType">@carType</option>
-        }
-    </select>
-  </div>
+            }
+        </select>
+        <div class="invalid-feedback">
+            Please select a car type.
+        </div>
+    </div>
 
-   <div class="form-group col-xs-12 col-md-6 d-flex flex-column justify-content-center">
-    <label for="fileInput">Example file input</label>
-    <InputFile id="fileInput" class="form-control-file" OnChange="@LoadFile" accept=".jpg, .jpeg, .png" />
-  </div>
+    <div class="form-group col-xs-12 col-md-6 d-flex flex-column justify-content-center">
+        <label for="fileInput">Example file input</label>
+        <InputFile id="fileInput" class="form-control-file" OnChange="@LoadFile" accept=".jpg, .jpeg, .png" required />
+        <div class="invalid-feedback">
+            Please upload a file.
+        </div>
+    </div>
 
-  <div class="col-md-6" />
+    <div class="col-md-6" />
 
     <div class="col-xs-12 col-md-6 mt-2">
         @if (isFileLoading) {
-            <div style="display: flex; height: 200px; width: 200px; align-items: center; justify-content: center;">
-    using blazor_client.Contacts;
-                <div class="spinner-border text-primary" role="status" />
-            </div>
+        <div style="display: flex; height: 200px; width: 200px; align-items: center; justify-content: center;">
+            <div class="spinner-border text-primary" role="status" />
+        </div>
         }
         else {
-            <div>
-                <img class="block" src="@FileBase64" height="200px" width="200px" />
-            </div>
+        <div>
+            <img class="block" src="@FileBase64" height="200px" width="200px" />
+        </div>
         }
     </div>
 
     <div class="row">
         <div class="col">
             <div class="text-end">
-                <button disabled="@isSubmitting"  type="submit" class="btn btn-primary mt-2 pull-right" style="width: 100px">
-                    @if (isSubmitting) 
+                <button disabled="@isSubmitting" type="submit" class="btn btn-primary mt-2 pull-right" style="width: 100px">
+                    @if (isSubmitting)
                     {
-                        <div class="spinner-border text-white" role="status" />
+                    <div class="spinner-border text-white" role="status" />
                     }
                     else {
-                        <span>Submit</span>
+                    <span>Submit</span>
                     }
-                    </button>
+                </button>
             </div>
         </div>
     </div>
 </form>
 
-
 @code {
-    private string? regNumberInput;
-    private Color colorInput;
-    private Make makeInput;
-    private CarModel modelInput;
-    private CarType carTypeInput;
-    private byte[] fileInput = Array.Empty<byte>();
-    private string? FileBase64; //TODO: Return the file path
-    private bool isFileLoading;
-    private string? regNumberInputErrorMessage;
-    private bool isSubmitting;
-    
-    private async Task Submit()
-    {   
-        if (isSubmitting) return;
+private string? regNumberInput;
+private Color colorInput;
+private Make makeInput;
+private CarModel modelInput;
+private CarType carTypeInput;
+private byte[] fileInput = Array.Empty<byte>();
+private string? FileBase64; //TODO: Return the file path
+private bool isFileLoading;
+private string? regNumberInputErrorMessage;
+private bool isSubmitting;
 
-        isSubmitting = true;
-        var isFormValid = ValidateInputs();
-        if (!isFormValid)
-        {
-            isSubmitting = false;
-            return;
-        } 
+private async Task Submit()
+{
+if (isSubmitting) return;
 
-        var car = new CarPostModel
-        {
-            RegistrationNumber = regNumberInput ?? string.Empty,
-            Color = colorInput,
-            Make = makeInput,
-            Model = modelInput,
-            Type = carTypeInput,
-            ImageByteArr = fileInput,
-        };
+isSubmitting = true;
 
-        var serverErrorMessage = await apiService.AddCarAsync(car);
+if (!ValidateInputs())
+{
+isSubmitting = false;
+return;
+}
 
-        // TODO: Do server error message handling
-        if (!string.IsNullOrEmpty(serverErrorMessage))
-        {
-            regNumberInputErrorMessage = serverErrorMessage;
-            isSubmitting = false;
-            return;
-        }
+var car = new CarPostModel
+{
+RegistrationNumber = regNumberInput ?? string.Empty,
+Color = colorInput,
+Make = makeInput,
+Model = modelInput,
+Type = carTypeInput,
+ImageByteArr = fileInput,
+};
 
-        isSubmitting = false;
-        NavManager.NavigateTo("/cars-list?car-added=true");
-    }
+var serverErrorMessage = await apiService.AddCarAsync(car);
 
-    private async Task LoadFile(InputFileChangeEventArgs e) { 
-        isFileLoading = true;
-        var file = e.GetMultipleFiles().FirstOrDefault();
+// TODO: Do server error message handling
+if (!string.IsNullOrEmpty(serverErrorMessage))
+{
+regNumberInputErrorMessage = serverErrorMessage;
+isSubmitting = false;
+return;
+}
 
-        if (file != null) {
-            long maxFileSize = 2L * 1024L * 1024L * 1024L; // 2GB
+isSubmitting = false;
+NavManager.NavigateTo("/cars-list?car-added=true");
+}
 
-            var buffer = new byte[file.Size];
-            await file.OpenReadStream(maxAllowedSize:maxFileSize).ReadAsync(buffer);
-            FileBase64 = "data:image/png;base64," + Convert.ToBase64String(buffer);
-            fileInput = new byte[buffer.Length];
-            buffer.CopyTo(fileInput, 0);
-        } 
-        else 
-        {
-            FileBase64 = null;
-        }
+private async Task LoadFile(InputFileChangeEventArgs e) {
+isFileLoading = true;
+var file = e.GetMultipleFiles().FirstOrDefault();
 
-        isFileLoading = false;
-    }
+if (file != null) {
+long maxFileSize = 2L * 1024L * 1024L * 1024L; // 2GB
 
-    private bool ValidateInputs() {
-        if (string.IsNullOrEmpty(regNumberInput) || regNumberInput.Length < 6 || regNumberInput.Length > 10) {
-            regNumberInputErrorMessage = "Registration must be between 6 and 10 characters";
-            return false;
-        }
+var buffer = new byte[file.Size];
+await file.OpenReadStream(maxAllowedSize:maxFileSize).ReadAsync(buffer);
+FileBase64 = "data:image/png;base64," + Convert.ToBase64String(buffer);
+fileInput = new byte[buffer.Length];
+buffer.CopyTo(fileInput, 0);
+}
+else
+{
+FileBase64 = null;
+}
 
-        regNumberInputErrorMessage = string.Empty;
-        return true;
-    }
+isFileLoading = false;
+}
+
+private bool ValidateInputs() {
+if (string.IsNullOrEmpty(regNumberInput) || regNumberInput.Length < 6 || regNumberInput.Length > 10) {
+regNumberInputErrorMessage = "Registration must be between 6 and 10 characters";
+return false;
+}
+
+regNumberInputErrorMessage = string.Empty;
+return true;
+}
 }

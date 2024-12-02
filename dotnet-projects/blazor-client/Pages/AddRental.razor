@@ -101,7 +101,7 @@
     protected override async Task OnInitializedAsync()
     {
         var serverUrl = "http://localhost:5098";
-        var parsedCars = await Http.GetFromJsonAsync<List<CarDto>>($"{serverUrl}/cars/all");
+        var parsedCars = await Http.GetFromJsonAsync<List<CarDto>>($"{serverUrl}/cars/all"); //TODO: Use api
 
         if (parsedCars != null)
         {

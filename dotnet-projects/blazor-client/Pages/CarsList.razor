@@ -1,9 +1,12 @@
 ﻿@page "/cars-list"
+@using blazor_client.Contacts
+@using blazor_client.Services
 @using shared
 @using shared.Enums
 @using shared.Models
 @inject HttpClient Http
 @inject NavigationManager NavManager
+@inject IApiService apiService;
 
 <PageTitle>Cars</PageTitle>
 
@@ -70,9 +73,8 @@ else
             // Remove the query parameter
             NavManager.NavigateTo("/cars-list");
         }
-
-        var serverUrl = "http://localhost:5098";
-        cars = await Http.GetFromJsonAsync<CarDto[]>($"{serverUrl}/cars/all");
+        
+        cars = await apiService.GetAllCarsAsync();
     }
 
 }
