@@ -16,7 +16,7 @@ public class CarsService : ICarsService
     {
         _cloudinaryService = cloudinaryService;
     }
-    
+
     public async Task<IEnumerable<CarDto>> GetCarsAsync()
     {
         var client = GrpcConnector.ConnectCarServiceAsync();
@@ -36,18 +36,16 @@ public class CarsService : ICarsService
     public async Task<CarDto> GetCarAsync(string regNumber)
     {
         var client = GrpcConnector.ConnectCarServiceAsync();
-        await Task.Delay(1000);
-        // var response = await client.(new GetCarRequest { RegNumber = regNumber });
+        var response = await client.getCarAsync(new GetCarRequest { RegNumber = regNumber });
 
-        // TODO use real data
         return new CarDto()
         {
-            RegistrationNumber = "response.RegNumber",
-            Make = Make.Ford,
-            Model = CarModel.Ford_Edge,
-            Type = CarType.Sedan,
-            Color = Color.Black,
-            ImageUrl = "response.Image",
+            RegistrationNumber = response.RegNumber,
+            Make = (Make)response.Make,
+            Model = (CarModel)response.Model,
+            Type = (CarType)response.Type,
+            Color = (Color)response.Color,
+            ImageUrl = response.Image,
         };
     }
 
@@ -86,7 +84,12 @@ public class CarsService : ICarsService
         var client = GrpcConnector.ConnectCarServiceAsync();
 
         // Get image url
-        var imageUrl = await _cloudinaryService.UploadImageAsync(car.ImageByteArr);
+        var carFromDb = await this.GetCarAsync(car.RegistrationNumber);
+        var imageUrl = carFromDb.ImageUrl;
+        if (car.ShouldChangeFile)
+        {
+            imageUrl = await _cloudinaryService.UploadImageAsync(car.ImageByteArr);
+        }
 
         var response = await client.updateCarAsync(
             new UpdateCarRequest

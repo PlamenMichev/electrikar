@@ -37,11 +37,18 @@ public class CarsController : ControllerBase
     public async Task<ActionResult<Car>> Create([FromBody] CarPostModel car)
     {
         var response = await _carsService.CreateCarAsync(car);
-        return CreatedAtAction(nameof(GetByRegNumber), new { registrationNumber = response.RegistrationNumber }, response);
+        return CreatedAtAction(
+            nameof(GetByRegNumber),
+            new { registrationNumber = response.RegistrationNumber },
+            response
+        );
     }
 
     [HttpPut]
-    public async Task<ActionResult<Car>> Update([FromBody] CarPostModel car)
+    public async Task<ActionResult<Car>> Update(
+        [FromRoute] string regNumber,
+        [FromBody] CarPostModel car
+    )
     {
         var response = await _carsService.UpdateCarAsync(car);
         return Ok(response);

@@ -81,9 +81,9 @@
 
     <div class="col-xs-12 col-md-6 mt-2">
         @if (isFileLoading) {
-        <div style="display: flex; height: 200px; width: 200px; align-items: center; justify-content: center;">
-            <div class="spinner-border text-primary" role="status" />
-        </div>
+            <div style="display: flex; height: 200px; width: 200px; align-items: center; justify-content: center;">
+                <div class="spinner-border text-primary" role="status" />
+            </div>
         }
         else {
         <div>
@@ -96,7 +96,7 @@
         <div class="col">
             <div class="text-end">
                 <button disabled="@isSubmitting" type="submit" class="btn btn-primary mt-2 pull-right" style="width: 100px">
-                    @if (isSubmitting)
+                    @if (isSubmitting) 
                     {
                     <div class="spinner-border text-white" role="status" />
                     }
@@ -126,6 +126,7 @@ private async Task Submit()
 if (isSubmitting) return;
 
 isSubmitting = true;
+
 
 if (!ValidateInputs())
 {
