@@ -16,10 +16,10 @@ public class Car
   private CarType type;
   private int price;
   private String image;
-  private boolean isRented;
+  private boolean hasRentals;
 
   public Car(String reg_number, CarColor color,  CarMake make, CarModel model,
-      CarType type, int price, String image)
+      CarType type, int price, String image, boolean hasRentals)
   {
     this.reg_number = reg_number;
     this.color = color;
@@ -28,6 +28,7 @@ public class Car
     this.type = type;
     this.price = price;
     this.image = image;
+    this.hasRentals = hasRentals;
   }
 
   public String getReg_number()
@@ -100,13 +101,13 @@ public class Car
   {
     this.image = image;
   }
-  public void setRented(boolean rented)
+  public void setRented(boolean hasRentals)
   {
-    isRented = rented;
+    this.hasRentals = hasRentals;
   }
   public boolean checkRent()
   {
-    return isRented;
+    return hasRentals;
   }
 
   public String toString() {
@@ -118,6 +119,7 @@ public class Car
         ", type=" + type +
         ", price=" + price +
         ", image=" + image +
+        ", hasRentals=" + hasRentals +
         '}';
   }
 }
