@@ -16,7 +16,7 @@ public class CarsService : ICarsService
     {
         _cloudinaryService = cloudinaryService;
     }
-
+    
     public async Task<IEnumerable<CarDto>> GetCarsAsync()
     {
         var client = GrpcConnector.ConnectCarServiceAsync();

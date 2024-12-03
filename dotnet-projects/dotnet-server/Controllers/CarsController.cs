@@ -1,6 +1,5 @@
 using dotnet_server.Contracts;
 using Microsoft.AspNetCore.Mvc;
-using shared.Enums;
 using shared.Models;
 
 namespace dotnet_server.Controllers;
@@ -16,12 +15,15 @@ public class CarsController : ControllerBase
         _carsService = carsService;
     }
 
-    public async Task<ActionResult<IEnumerable<CarDto>>> GetById(
-        [FromRoute] string registrationNumber
-    )
+    [HttpGet("{registrationNumber}")]
+    public async Task<ActionResult<CarDto>> GetByRegNumber([FromRoute] string registrationNumber)
     {
-        var response = await _carsService.GetCarAsync(registrationNumber);
-        return Ok(response);
+        var car = await _carsService.GetCarAsync(registrationNumber);
+        if (car == null)
+        {
+            return NotFound();
+        }
+        return Ok(car);
     }
 
     [HttpGet("all")]
@@ -35,7 +37,7 @@ public class CarsController : ControllerBase
     public async Task<ActionResult<Car>> Create([FromBody] CarPostModel car)
     {
         var response = await _carsService.CreateCarAsync(car);
-        return CreatedAtAction(nameof(GetById), new { response.RegistrationNumber }, response);
+        return CreatedAtAction(nameof(GetByRegNumber), new { registrationNumber = response.RegistrationNumber }, response);
     }
 
     [HttpPut]

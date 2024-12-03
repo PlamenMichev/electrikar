@@ -21,13 +21,16 @@ public class Main
   {
     Server server = ServerBuilder
             .forPort(8080)
-            .addService(new CarsServiceImpl()).build();
+            .addService(new CarsServiceImpl())
+            .addService(new RentalsServiceImpl())
+            .build();
 
-
-
-
-
-
+    var users = SqlUserDao.getInstance();
+    var usersCount = users.getAll().size();
+    if (usersCount == 0) {
+      users.createUser("Plamen Michev", "plamen@mail.com", "1234", "1212121212",
+              "132312332", true, false);
+    }
 
     System.out.println("Hello World!");
     server.start();
