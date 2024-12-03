@@ -39,6 +39,7 @@ message UpdateCarRequest {
   int64 type = 5;
   string image = 6;
   bool hasRentals = 7;
+  string oldRegNumber = 8;
 }
 
 message UpdateCarResponse {

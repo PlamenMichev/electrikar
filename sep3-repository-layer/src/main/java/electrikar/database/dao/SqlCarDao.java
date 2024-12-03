@@ -48,18 +48,19 @@ public class SqlCarDao implements CarDao
     }
   }
 
-  @Override public void updateCar(Car car) throws SQLException
+  @Override public void updateCar(String oldReg, Car car) throws SQLException
   {
     try(Connection connection = dbConnector.connect())
     {
-      PreparedStatement statement = connection.prepareStatement("UPDATE \"Car\" SET color = ?, make = ?, model = ?, type = ?, price = ?, image = ? WHERE reg_num = ?");
-      statement.setInt(1, car.getColor().ordinal());
-      statement.setInt(2, car.getMake().ordinal());
-      statement.setInt(3, car.getModel().ordinal());
-      statement.setInt(4, car.getType().ordinal());
-      statement.setInt(5, car.getPrice());
-      statement.setString(6, car.getImage());
-      statement.setString(7, car.getReg_number());
+      PreparedStatement statement = connection.prepareStatement("UPDATE \"Car\" SET reg_num = ?, color = ?, make = ?, model = ?, type = ?, price = ?, image = ? WHERE reg_num = ?");
+      statement.setString(1, car.getReg_number());
+      statement.setInt(2, car.getColor().ordinal());
+      statement.setInt(3, car.getMake().ordinal());
+      statement.setInt(4, car.getModel().ordinal());
+      statement.setInt(5, car.getType().ordinal());
+      statement.setInt(6, car.getPrice());
+      statement.setString(7, car.getImage());
+      statement.setString(8, oldReg);
       statement.executeUpdate();
     }
   }

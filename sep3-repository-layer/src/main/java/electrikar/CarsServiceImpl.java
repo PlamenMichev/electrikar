@@ -51,7 +51,7 @@ public class CarsServiceImpl extends CarsServiceGrpc.CarsServiceImplBase {
                     CarType.valueOf((int)request.getType()),
                     0, request.getImage(), false);
             var carDao = SqlCarDao.getInstance();
-            carDao.updateCar(car);
+            carDao.updateCar(request.getOldRegNumber(), car);
 
             var response = UpdateCarResponse.newBuilder().setRegNumber(car.getReg_number()).build();
             responseObserver.onNext(response);

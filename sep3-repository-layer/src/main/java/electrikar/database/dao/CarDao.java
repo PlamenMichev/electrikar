@@ -14,7 +14,7 @@ public interface CarDao
 
   Car createCar(String regNum, CarColor color,  CarMake make, CarModel model,
       CarType type, int price, String image, boolean hasRentals) throws SQLException;
-  void updateCar(Car car) throws SQLException;
+  void updateCar(String oldReg, Car car) throws SQLException;
   Car getCarByReg(String reg)  throws SQLException;
   void deleteCarByReg(String reg) throws SQLException;
   ArrayList<Car> getAll() throws SQLException;

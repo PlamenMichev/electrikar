@@ -29,7 +29,10 @@ public class Main
 
     System.out.println(carDao.getCarByReg("1234ABCD"));
     System.out.println(carDao.getAll());
-carDao.deleteCarByReg("1234ABCD");
+carDao.updateCar("1234ABDD", new Car("1234ABdd", CarColor.Red, CarMake.Ford, CarModel.Ford_Kuga, CarType.SEDAN, 0, "image", false));
+
+    System.out.println(carDao.getCarByReg("1234ABDD"));
+    System.out.println(carDao.getCarByReg("1234ABdd"));
 
     System.out.println("Hello World!");
     server.start();
