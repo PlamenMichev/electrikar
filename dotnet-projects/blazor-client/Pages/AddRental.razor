@@ -2,21 +2,25 @@
 @using blazor_client.Contacts
 @using shared.Enums
 @using shared.Models
+@using System;
+@using System.Collections.Generic;
+@using System.Linq;
 @inject HttpClient Http
 @inject NavigationManager NavManager
 @inject IApiService apiService;
 
-<PageTitle>Add Car</PageTitle>
+<PageTitle>Add Car</PageTitle> 
 
-<form @onsubmit="Submit" class="row">
+<form @onsubmit="Submit" class="row needs-validation" novalidate>
     <div class="form-group col-xs-12 col-md-6">
         <label for="startDateInput">Start date</label>
         <input type="datetime-local"
                @bind="startDateInput"
-               class="@(!string.IsNullOrEmpty(startDateInputErrorMessage) ? "is-invalid form-control" : "form-control")"
-               id="startDateInput">
-        <div class="@(!string.IsNullOrEmpty(startDateInputErrorMessage) ? "invalid-feedback" : "feedback")">
-            @(startDateInputErrorMessage ?? "")
+               class="@StartDateInputClass"
+               id="startDateInput"
+               required>
+        <div class="invalid-feedback">
+            @(startDateInputErrorMessage ?? @startDateInputErrorMessage)
         </div>
     </div>
     
@@ -24,40 +28,49 @@
         <label for="endDateInput">End date</label>
         <input type="datetime-local"
                @bind="endDateInput"
-               class="@(!string.IsNullOrEmpty(endDateInputErrorMessage) ? "is-invalid form-control" : "form-control")"
-               id="endDateInput">
-        <div class="@(!string.IsNullOrEmpty(endDateInputErrorMessage) ? "invalid-feedback" : "feedback")">
-            @(endDateInputErrorMessage ?? "")
+               class="@EndDateInputClass"
+               id="endDateInput"
+               required>
+        <div class="invalid-feedback">
+            @(endDateInputErrorMessage ?? @endDateInputErrorMessage)
         </div>
     </div>
     
     <div class="form-group col-xs-12 col-md-6 mb-4">
         <label for="carInput">Car</label> 
-        <select @bind="carInput" class="form-control" id="makeInput">
+        <select @bind="carInput" class="@CarInputClass" id="carInput" required>
             @foreach (var car in cars)
             {
                 <option value="@car.RegistrationNumber">@car.Type, @car.Make</option> // TODO: Disable unavailable cars
             }
         </select>
+        <div class="invalid-feedback">
+            @(carInputErrorMessage ?? @carInputErrorMessage)
+        </div>
     </div>
-    
+
     <div class="form-group col-xs-12 col-md-6">
         <label for="userIdInput">User</label>
-        <input @bind="userIdInput" class="@(!string.IsNullOrEmpty(userIdInputErrorMessage)? "is-invalid form-control" : "form-control")" placeholder="user id" id="userIdInput">
-        <div class="@(!string.IsNullOrEmpty(userIdInputErrorMessage)? "invalid-feedback" : "feedback")">
-            @(userIdInputErrorMessage ?? "")
+        <InputNumber @bind-Value="userIdInput"
+                     class="@UserIdInputClass"
+                     placeholder="Enter user id"
+                     id="userIdInput"
+                     required />
+        <div class="invalid-feedback">
+            @(userIdInputErrorMessage ?? @userIdInputErrorMessage)
         </div>
     </div>
 
     <div class="row">
         <div class="col">
             <div class="text-end">
-                <button disabled="@isSubmitting"  type="submit" class="btn btn-primary mt-2 pull-right" style="width: 100px">
+                <button disabled="@isSubmitting" type="submit" class="btn btn-primary mt-2 pull-right" style="width: 100px">
                     @if (isSubmitting)
                     {
                         <div class="spinner-border text-white" role="status" />
                     }
-                    else {
+                    else
+                    {
                         <span>Submit</span>
                     }
                 </button>
@@ -67,7 +80,7 @@
 </form>
 
 
-@code {
+@code { 
     private DateTime? startDateInput;
     private string? startDateInputErrorMessage;
     
@@ -76,23 +89,31 @@
     
     private List<CarDto> cars = new List<CarDto>();
     private string carInput = string.Empty;
+    private string? carInputErrorMessage;
     
-    private string? userIdInput;
+    private int? userIdInput;
     private string? userIdInputErrorMessage;
     
     private bool isSubmitting;
+
+    private string StartDateInputClass => string.IsNullOrEmpty(startDateInputErrorMessage) ? "form-control" : "form-control is-invalid";
+    private string EndDateInputClass => string.IsNullOrEmpty(endDateInputErrorMessage) ? "form-control" : "form-control is-invalid";
+    private string CarInputClass => string.IsNullOrEmpty(carInputErrorMessage) ? "form-control" : "form-control is-invalid";
+    private string UserIdInputClass => string.IsNullOrEmpty(userIdInputErrorMessage) ? "form-control" : "form-control is-invalid";
     
     protected override async Task OnInitializedAsync()
     {
-        var serverUrl = "http://localhost:5098";
-        var parsedCars = await Http.GetFromJsonAsync<List<CarDto>>($"{serverUrl}/cars/all");
-
-        // If there are no cars go to the add car page
-
-        if (parsedCars != null)
+        var carArray = await apiService.GetAllCarsAsync();
+        var parsedCars = carArray?.ToList() ?? new List<CarDto>();
+        
+        if (parsedCars.Any())
         {
             cars = parsedCars;
             carInput = cars.First().RegistrationNumber;
+        }
+        else // If there are no cars go to the add car page
+        {
+            NavManager.NavigateTo("/add-car");
         }
         
         // Get users
@@ -110,17 +131,16 @@
             return;
         }
 
-
         var rental = new RentalDto
         {
             CarRegNumber = carInput,
             StartDate = new DateTimeOffset(startDateInput!.Value),
             EndDate = new DateTimeOffset(endDateInput!.Value),
-            UserId = int.Parse(userIdInput!),
+            UserId = (int)userIdInput!,
         };
         
         var serverErrorMessage = await apiService.AddRentalAsync(rental);
-
+        
         // TODO: Do server error message handling
         if (!string.IsNullOrEmpty(serverErrorMessage))
         {
@@ -129,17 +149,29 @@
         }
 
         isSubmitting = false;
-        NavManager.NavigateTo("");
+        NavManager.NavigateTo("/rental-list?rental-added=true");
     }
 
     private bool ValidateInputs()
     {
         bool validated = true;
-
-        // Check if car is empty string
+        
+        // CAR VALIDATION
+        
+        if (string.IsNullOrEmpty(carInput))
+        {
+            carInputErrorMessage = "Please select a car.";
+            validated = false;
+        }
+        else
+        {
+            carInputErrorMessage = string.Empty;
+        }
+        
+        // DATE VALIDATION
         
         if (string.IsNullOrEmpty(startDateInput.ToString())) {
-            startDateInputErrorMessage = "Please select a valid date and time.";
+            startDateInputErrorMessage = "Please select a valid start date and time.";
             validated = false;
         }
         else
@@ -148,7 +180,7 @@
         }
         
         if (string.IsNullOrEmpty(endDateInput.ToString())) {
-            endDateInputErrorMessage = "Please select a valid date and time.";
+            endDateInputErrorMessage = "Please select a valid end date and time.";
             validated = false;
         }
         else
@@ -158,13 +190,21 @@
 
         if (startDateInput > endDateInput)
         {
-            startDateInputErrorMessage = "Start date must be earlier than end date";
-            endDateInputErrorMessage = "Start date must be earlier than end date";
+            startDateInputErrorMessage = "Start date must be earlier than end date.";
+            endDateInputErrorMessage = "Start date must be earlier than end date.";
+            validated = false;
+        }
+
+        if (startDateInput < DateTime.Now.AddMinutes(15)) // This is current time + 15 minutes
+        {
+            startDateInputErrorMessage = "Start date is too early.";
             validated = false;
         }
         
-        if (string.IsNullOrEmpty(userIdInput)) {
-            userIdInputErrorMessage = "Please select a valid user.";
+        // USER VALIDATION
+        
+        if (userIdInput < 0 || userIdInput == null) {
+            userIdInputErrorMessage = "Please provide a valid user ID.";
             validated = false;
         }
         else if (false) // TODO: Make sure user exists
@@ -176,6 +216,8 @@
         {
             userIdInputErrorMessage = string.Empty;
         }
+        
+        // RETURN
         
         return validated;
     }

@@ -48,6 +48,7 @@ public class SqlRentalDao implements RentalDao {
         {
           int id = generatedKeys.getInt(1);
           return new Rental(id, regNum, userId, startDate, endDate,endDate, RentalStatus.PENDING, null, null);
+
         }
         else
         {
