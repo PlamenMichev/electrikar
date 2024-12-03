@@ -8,4 +8,5 @@ public class CarPostModel
     public CarType Type { get; set; }
     public Color Color { get; set; }
     public byte[] ImageByteArr { get; set; } = Array.Empty<byte>();
+    public bool ShouldChangeFile { get; set; }
 }
