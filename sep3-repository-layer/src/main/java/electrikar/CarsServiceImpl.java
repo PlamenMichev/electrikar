@@ -28,9 +28,9 @@ public class CarsServiceImpl extends CarsServiceGrpc.CarsServiceImplBase {
                     CarMake.valueOf((int)request.getMake()),
                     CarModel.valueOf((int)request.getModel()),
                     CarType.valueOf((int)request.getType()),
-                    0, request.getImage());
+                    0, request.getImage(), false);
             var carDao = SqlCarDao.getInstance();
-            var newCar = carDao.createCar(car.getReg_number(), car.getColor(), car.getMake(), car.getModel(), car.getType(), car.getPrice(), car.getImage());
+            var newCar = carDao.createCar(car.getReg_number(), car.getColor(), car.getMake(), car.getModel(), car.getType(), car.getPrice(), car.getImage(), car.checkRent());
 
             CreateCarResponse response = CreateCarResponse.newBuilder().setRegNumber(newCar.getReg_number()).build();
             responseObserver.onNext(response);
@@ -49,9 +49,9 @@ public class CarsServiceImpl extends CarsServiceGrpc.CarsServiceImplBase {
                     CarMake.valueOf((int)request.getMake()),
                     CarModel.valueOf((int)request.getModel()),
                     CarType.valueOf((int)request.getType()),
-                    0, request.getImage());
+                    0, request.getImage(), false);
             var carDao = SqlCarDao.getInstance();
-            carDao.updateCar(car);
+            carDao.updateCar(request.getOldRegNumber(), car);
 
             var response = UpdateCarResponse.newBuilder().setRegNumber(car.getReg_number()).build();
             responseObserver.onNext(response);

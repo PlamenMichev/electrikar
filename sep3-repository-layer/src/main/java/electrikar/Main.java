@@ -25,12 +25,14 @@ public class Main
             .addService(new RentalsServiceImpl())
             .build();
 
-    var users = SqlUserDao.getInstance();
-    var usersCount = users.getAll().size();
-    if (usersCount == 0) {
-      users.createUser("Plamen Michev", "plamen@mail.com", "1234", "1212121212",
-              "132312332", true, false);
-    }
+    var carDao = SqlCarDao.getInstance();
+
+    System.out.println(carDao.getCarByReg("1234ABCD"));
+    System.out.println(carDao.getAll());
+carDao.updateCar("1234ABDD", new Car("1234ABdd", CarColor.Red, CarMake.Ford, CarModel.Ford_Kuga, CarType.SEDAN, 0, "image", false));
+
+    System.out.println(carDao.getCarByReg("1234ABDD"));
+    System.out.println(carDao.getCarByReg("1234ABdd"));
 
     System.out.println("Hello World!");
     server.start();

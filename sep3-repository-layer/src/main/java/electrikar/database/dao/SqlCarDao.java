@@ -31,7 +31,7 @@ public class SqlCarDao implements CarDao
 
 
   @Override public Car createCar(String regNum, CarColor color,
-                                 CarMake make, CarModel model, CarType type, int price, String image) throws SQLException
+                                 CarMake make, CarModel model, CarType type, int price, String image, boolean hasRentals) throws SQLException
   {
     try(Connection connection = dbConnector.connect())
     {
@@ -44,22 +44,23 @@ public class SqlCarDao implements CarDao
       statement.setInt(6, price);
       statement.setString(7, image);
       statement.executeUpdate();
-      return new Car(regNum, color, make, model, type, price, image);
+      return new Car(regNum, color, make, model, type, price, image, false);
     }
   }
 
-  @Override public void updateCar(Car car) throws SQLException
+  @Override public void updateCar(String oldReg, Car car) throws SQLException
   {
     try(Connection connection = dbConnector.connect())
     {
-      PreparedStatement statement = connection.prepareStatement("UPDATE \"Car\" SET color = ?, make = ?, model = ?, type = ?, price = ?, image = ? WHERE reg_num = ?");
-      statement.setInt(1, car.getColor().ordinal());
-      statement.setInt(2, car.getMake().ordinal());
-      statement.setInt(3, car.getModel().ordinal());
-      statement.setInt(4, car.getType().ordinal());
-      statement.setInt(5, car.getPrice());
-      statement.setString(6, car.getImage());
-      statement.setString(7, car.getReg_number());
+      PreparedStatement statement = connection.prepareStatement("UPDATE \"Car\" SET reg_num = ?, color = ?, make = ?, model = ?, type = ?, price = ?, image = ? WHERE reg_num = ?");
+      statement.setString(1, car.getReg_number());
+      statement.setInt(2, car.getColor().ordinal());
+      statement.setInt(3, car.getMake().ordinal());
+      statement.setInt(4, car.getModel().ordinal());
+      statement.setInt(5, car.getType().ordinal());
+      statement.setInt(6, car.getPrice());
+      statement.setString(7, car.getImage());
+      statement.setString(8, oldReg);
       statement.executeUpdate();
     }
   }
@@ -68,7 +69,12 @@ public class SqlCarDao implements CarDao
   {
     try(Connection connection = dbConnector.connect())
     {
-      PreparedStatement statement = connection.prepareStatement("SELECT * FROM \"Car\" WHERE reg_num = ?");
+      PreparedStatement statement = connection.prepareStatement("SELECT reg_num, color, make, model, type, price, image,  "
+          + "CASE WHEN COUNT(R.car_reg) > 0 THEN TRUE ELSE FALSE END AS has_rentals "
+          + "FROM \"Car\" "
+          + "LEFT JOIN \"Rental\" R ON R.car_reg = reg_num "
+          + "WHERE reg_num = ? "
+          + "GROUP BY reg_num, color, make, model, type, price, image");
       statement.setString(1, reg);
       ResultSet resultSet = statement.executeQuery();
       if(resultSet.next())
@@ -79,7 +85,8 @@ public class SqlCarDao implements CarDao
         CarType type = CarType.valueOf(resultSet.getInt("type"));
         int price = resultSet.getInt("price");
         String image = resultSet.getString("image");
-        return new Car(reg, color, make, model, type, price, image);
+        boolean hasRentals = resultSet.getBoolean("has_rentals");
+        return new Car(reg, color, make, model, type, price, image, hasRentals);
       }
       else {
         return null;
@@ -90,10 +97,15 @@ public class SqlCarDao implements CarDao
   @Override public void deleteCarByReg(String reg) throws SQLException
   {
     try(Connection connection = dbConnector.connect())
-    {
+    {var carDao = SqlCarDao.getInstance();
+      if (carDao.getCarByReg(reg).checkRent()) {
+        System.err.println("Error: Car has rentals");
+      }
+      else {
       PreparedStatement statement = connection.prepareStatement("DELETE FROM \"Car\" WHERE reg_num = ?");
       statement.setString(1, reg);
-      statement.executeUpdate();
+      statement.executeUpdate();}
+
     }
   }
 
@@ -102,7 +114,11 @@ public class SqlCarDao implements CarDao
     {
         try(Connection connection = dbConnector.connect())
         {
-            PreparedStatement statement = connection.prepareStatement("SELECT * FROM \"Car\"");
+            PreparedStatement statement = connection.prepareStatement("SELECT reg_num, color, make, model, type, price, image,  "
+                + "CASE WHEN COUNT(R.car_reg) > 0 THEN TRUE ELSE FALSE END AS has_rentals "
+                + "FROM \"Car\" "
+                + "LEFT JOIN \"Rental\" R ON R.car_reg = reg_num "
+                + "GROUP BY reg_num, color, make, model, type, price, image");
             ResultSet resultSet = statement.executeQuery();
             ArrayList<Car> cars = new ArrayList<>();
             while(resultSet.next())
@@ -114,7 +130,8 @@ public class SqlCarDao implements CarDao
                 CarType type = CarType.valueOf(resultSet.getInt("type"));
                 int price = resultSet.getInt("price");
                 String image = resultSet.getString("image");
-                cars.add(new Car(reg, color, make, model, type, price, image));
+                boolean hasRentals = resultSet.getBoolean("has_rentals");
+                cars.add(new Car(reg, color, make, model, type, price, image, hasRentals));
             }
             return cars;
         }
