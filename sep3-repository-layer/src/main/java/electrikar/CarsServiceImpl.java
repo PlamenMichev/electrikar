@@ -90,6 +90,7 @@ public class CarsServiceImpl extends CarsServiceGrpc.CarsServiceImplBase {
                         .setModel(car.getModel().ordinal())
                         .setType(car.getType().ordinal())
                         .setImage(car.getImage())
+                        .setHasRentals(car.checkRent())
                         .build();
                 carsList.addCars(carProto);
             }
@@ -117,6 +118,7 @@ public void getCar(GetCarRequest request, StreamObserver<GetCarResponse> respons
                 .setMake(car.getMake().ordinal())
                 .setModel(car.getModel().ordinal())
                 .setType(car.getType().ordinal()).setImage(car.getImage())
+                    .setHasRentals(car.checkRent())
                 .build();
             responseObserver.onNext(carProto);
         }

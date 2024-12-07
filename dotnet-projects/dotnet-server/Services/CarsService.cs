@@ -30,6 +30,7 @@ public class CarsService : ICarsService
             Type = (CarType)car.Type,
             RegistrationNumber = car.RegNumber,
             ImageUrl = car.Image,
+            HasRentals = car.HasRentals,
         });
     }
 
@@ -46,6 +47,7 @@ public class CarsService : ICarsService
             Type = (CarType)response.Type,
             Color = (Color)response.Color,
             ImageUrl = response.Image,
+            HasRentals = response.HasRentals,
         };
     }
 
@@ -84,7 +86,7 @@ public class CarsService : ICarsService
         var client = GrpcConnector.ConnectCarServiceAsync();
 
         // Get image url
-        var carFromDb = await this.GetCarAsync(car.RegistrationNumber);
+        var carFromDb = await this.GetCarAsync(car.OldRegistrationNumber ?? car.RegistrationNumber);
         var imageUrl = carFromDb.ImageUrl;
         if (car.ShouldChangeFile)
         {
@@ -100,6 +102,7 @@ public class CarsService : ICarsService
                 Model = (int)car.Model,
                 Type = (int)car.Type,
                 Image = imageUrl,
+                OldRegNumber = car.OldRegistrationNumber,
             }
         );
 

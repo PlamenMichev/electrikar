@@ -33,12 +33,12 @@ else
     <table class="table">
         <thead>
             <tr>
-                <th></th>
-                <th>Registration Number</th>
-                <th>Make</th>
-                <th>Model</th>
-                <th>Type</th>
-                <th>Color</th>
+                <th>Car reg number</th>
+                <th>Start Date</th>
+                <th>End Date</th>
+                <th>Status</th>
+                <th>Dropoff Date</th>
+                <th>Actions</th>
             </tr>
         </thead>
         <tbody>
@@ -46,10 +46,10 @@ else
             {
                 <tr>
                     <td>@rental.CarRegNumber</td>
-                    <td>@rental.StartDate</td>
-                    <td>@rental.EndDate</td>
+                    <td>@rental.StartDate.ToString("dd-MM-yyyy HH:mm")</td>
+                    <td>@rental.EndDate.ToString("dd-MM-yyyy HH:mm")</td>
                     <td>@rental.Status</td>
-                    <td>@rental.DropDate</td>
+                    <td>@(rental.DropDate.ToUnixTimeMilliseconds() == 0 ? "None" : rental.DropDate.ToString("dd-MM-yyyy HH:mm"))</td>
                 </tr>
             }
         </tbody>

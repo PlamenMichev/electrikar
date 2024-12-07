@@ -52,9 +52,9 @@ namespace dotnet_server.Services
                 Id = r.Id,
                 CarRegNumber = r.CarRegNumber,
                 UserId = (int)r.UserId,
-                StartDate = DateTimeOffset.FromUnixTimeSeconds(r.StartDate),
-                EndDate = DateTimeOffset.FromUnixTimeSeconds(r.EndDate),
-                DropDate = DateTimeOffset.FromUnixTimeSeconds(r.DropDate),
+                StartDate = DateTimeOffset.FromUnixTimeMilliseconds(r.StartDate),
+                EndDate = DateTimeOffset.FromUnixTimeMilliseconds(r.EndDate),
+                DropDate = DateTimeOffset.FromUnixTimeMilliseconds(r.DropDate),
                 Status = (RentalStatus)r.Status,
                 CustomerComment = r.CustomerComment,
                 OrganizerComment = r.OrganizerComment

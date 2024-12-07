@@ -1,0 +1,96 @@
+syntax = "proto3";
+option csharp_namespace = "RepositoryGrpcService";
+package org.electrikar.grpc;
+
+message CreateUserRequest
+{
+  int64 id = 1;
+  string legalName = 2;
+  string email = 3;
+  string password = 4;
+  string cpr = 5;
+  string phone = 6;
+  bool isAdmin = 7;
+  bool isBanned = 8;
+}
+
+message CreateUserResponse
+{
+  int64 id = 1;
+  string legalName = 2;
+  string email = 3;
+  string password = 4;
+  string cpr = 5;
+  string phone = 6;
+  bool isAdmin = 7;
+  bool isBanned = 8;
+}
+
+message UpdateUserRequest
+{
+  int64 id = 1;
+  string legalName = 2;
+  string email = 3;
+  string password = 4;
+  string cpr = 5;
+  string phone = 6;
+  bool isAdmin = 7;
+  bool isBanned = 8;
+}
+
+message UpdateUserResponse
+{
+  int64 id = 1;
+  string legalName = 2;
+  string email = 3;
+  string password = 4;
+  string cpr = 5;
+  string phone = 6;
+  bool isAdmin = 7;
+  bool isBanned = 8;
+}
+
+message GetUserRequest
+{
+  string legalName = 1;
+}
+
+message GetUserResponse
+{
+  int64 id = 1;
+  string legalName = 2;
+  string email = 3;
+  string password = 4;
+  string cpr = 5;
+  string phone = 6;
+  bool isAdmin = 7;
+  bool isBanned = 8;
+}
+
+message DeleteUserRequest
+{
+  int64 id = 1;
+}
+
+message DeleteUserResponse
+{
+  int64 id = 1;
+}
+
+message UsersList
+{
+  repeated CreateUserResponse users = 1;
+}
+
+message EmptyUser {
+
+}
+
+service UsersService
+{
+  rpc CreateUser(CreateUserRequest) returns (CreateUserResponse);
+  rpc UpdateUser(UpdateUserRequest) returns (UpdateUserResponse);
+  rpc GetUser(GetUserRequest) returns (GetUserResponse);
+  rpc DeleteUser(DeleteUserRequest) returns (DeleteUserResponse);
+  rpc GetUsersList(EmptyUser) returns (UsersList);
+}
