@@ -88,7 +88,7 @@ public class UsersServiceImpl extends UsersServiceGrpc.UsersServiceImplBase
     try
     {
       var userDao = SqlUserDao.getInstance();
-      var user = userDao.getUserByLegalName(request.getLegalName());
+      var user = userDao.getUserById((int)request.getId());
 
       var response = org.electrikar.grpc.GetUserResponse.newBuilder()
           .setId(user.getId()).setLegalName(user.getLegalName())

@@ -53,7 +53,7 @@ message UpdateUserResponse
 
 message GetUserRequest
 {
-  string legalName = 1;
+  int64 id = 1;
 }
 
 message GetUserResponse

@@ -79,16 +79,16 @@ public class SqlUserDao implements UserDao
     }
   }
 
-  @Override public User getUserByLegalName(String legalName) throws SQLException
+  @Override public User getUserById(int id) throws SQLException
   {
     try(Connection connection = dbConnector.connect())
     {
-      PreparedStatement statement = connection.prepareStatement("SELECT * FROM \"User\" WHERE legal_name = ?");
-      statement.setString(1, legalName);
+      PreparedStatement statement = connection.prepareStatement("SELECT * FROM \"User\" WHERE id = ?");
+      statement.setInt(1, id);
       ResultSet resultSet = statement.executeQuery();
       if(resultSet.next())
       {
-        int id = resultSet.getInt("id");
+        String legalName = resultSet.getString("legal_name");
         String email = resultSet.getString("email");
         String password = "****";
         String cpr = resultSet.getString("cpr");
