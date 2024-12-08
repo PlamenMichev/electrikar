@@ -188,7 +188,7 @@ public class ApiService : IApiService
         }
     }
 
-    public async Task<string> LoginAsync(LoginModel login)
+    public async Task<TokenResponse?> LoginAsync(LoginModel login)
     {
         try
         {
@@ -196,15 +196,14 @@ public class ApiService : IApiService
 
             if (response.IsSuccessStatusCode)
             {
-                var token = await response.Content.ReadAsStringAsync();
-                return token;
+                return await response.Content.ReadFromJsonAsync<TokenResponse>();
             }
 
-            return "Invalid login";
+            return null;
         }
         catch (Exception ex)
         {
-            return ex.Message;
+            throw new Exception(ex.Message);
         }
     }
 }

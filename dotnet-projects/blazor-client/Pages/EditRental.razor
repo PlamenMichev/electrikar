@@ -1,9 +1,11 @@
 @page "/edit-rental/{RentalId}"
+@using Microsoft.AspNetCore.Components.Authorization
 @using blazor_client.Contacts
 @using shared.Enums
 @using shared.Models
 @inject NavigationManager NavManager
 @inject IApiService apiService
+@inject AuthenticationStateProvider AuthStateProvider
 
 <PageTitle>Edit Rental</PageTitle>
 
@@ -216,6 +218,12 @@ else {
 
     protected override async Task OnInitializedAsync()
     {
+        var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+        if (!authState.User.Identity?.IsAuthenticated ?? false)
+        {
+            NavManager.NavigateTo("/login");
+        }
+
         if (int.TryParse(RentalId, out var id))
         {
             rental = await apiService.GetRentalByIdAsync(id);

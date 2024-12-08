@@ -1,8 +1,10 @@
 @page "/edit-car/{RegistrationNumber}"
+@using Microsoft.AspNetCore.Components.Authorization
 @using shared.Enums
 @using shared.Models
 @inject HttpClient Http
 @inject NavigationManager NavManager
+@inject AuthenticationStateProvider AuthStateProvider
 
 <PageTitle>Edit Car</PageTitle>
 
@@ -146,6 +148,12 @@ else {
 
     protected override async Task OnInitializedAsync()
     {
+        var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+        if (!authState.User.Identity?.IsAuthenticated ?? false)
+        {
+            NavManager.NavigateTo("/login");
+        }
+
         var serverUrl = "http://localhost:5098";
         
         var carResponse = await Http.GetFromJsonAsync<CarDto>($"{serverUrl}/cars/{RegistrationNumber}"); 

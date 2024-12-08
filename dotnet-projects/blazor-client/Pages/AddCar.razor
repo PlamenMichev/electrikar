@@ -1,10 +1,13 @@
 @page "/add-car"
+@using Microsoft.AspNetCore.Components.Authorization
 @using blazor_client.Contacts
 @using shared.Enums
 @using shared.Models
 @inject HttpClient Http
 @inject NavigationManager NavManager
 @inject IApiService apiService;
+@inject AuthenticationStateProvider AuthStateProvider
+@inject NavigationManager NavManager
 
 <PageTitle>Add Car</PageTitle>
 
@@ -120,6 +123,15 @@ private string? FileBase64; //TODO: Return the file path
 private bool isFileLoading;
 private string? regNumberInputErrorMessage;
 private bool isSubmitting;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+        if (!authState.User.Identity?.IsAuthenticated ?? false)
+        {
+            NavManager.NavigateTo("/login");
+        }
+    }
 
 private async Task Submit()
 {

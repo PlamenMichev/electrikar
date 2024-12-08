@@ -90,7 +90,7 @@ public class SqlUserDao implements UserDao
       {
         String legalName = resultSet.getString("legal_name");
         String email = resultSet.getString("email");
-        String password = "****";
+        String password = resultSet.getString("password");
         String cpr = resultSet.getString("cpr");
         String phone = resultSet.getString("phone");
         boolean isAdmin = resultSet.getBoolean("is_admin");
@@ -127,7 +127,7 @@ public class SqlUserDao implements UserDao
         int id = resultSet.getInt("id");
         String legalName = resultSet.getString("legal_name");
         String email = resultSet.getString("email");
-        String password = "****";
+        String password = resultSet.getString("password");
         String cpr = resultSet.getString("cpr");
         String phone = resultSet.getString("phone");
         boolean isAdmin = resultSet.getBoolean("is_admin");

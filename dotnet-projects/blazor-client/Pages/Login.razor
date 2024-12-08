@@ -27,7 +27,13 @@
                             <input type="password" id="password" class="form-control" @bind="loginRequest.Password" placeholder="Enter password" required />
                         </div>
                         <div class="d-grid">
-                            <button type="submit" class="btn btn-primary">Login</button>
+                            <button type="submit" class="btn btn-primary" disabled="@isLoading">
+                                @if (isLoading)
+                                {
+                                    <span class="spinner-border spinner-border-sm"></span>
+                                }
+                                Login
+                            </button>
                         </div>
                     </form>
                 </div>
@@ -45,24 +51,37 @@
 @code {
     private LoginModel loginRequest = new LoginModel();
     private string? errorMessage;
+    private bool isLoading = false;
 
     private async Task HandleLogin()
     {
         try
         {
+            isLoading = true;
             var response =  await apiService.LoginAsync(loginRequest);
-            await LocalStorage.SetItemAsync("token", response);
+            if (response == null)
+            {
+                errorMessage = "Invalid username or password";
+                isLoading = false;
+                return;
+            }
+
+            await LocalStorage.SetItemAsync("authToken", response.Token);
 
             // Notify the authentication state provider
             var authProvider = (CustomAuthStateProvider)AuthStateProvider;
             authProvider.NotifyAuthenticationStateChanged();
-
+            isLoading = false;
 
             Navigation.NavigateTo("/");
         }
         catch (Exception ex)
         {
             errorMessage = "An error occurred: " + ex.Message;
+        }
+        finally
+        {
+            isLoading = false;
         }
     }
 

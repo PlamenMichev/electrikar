@@ -1,4 +1,5 @@
 @page "/add-rental"
+@using Microsoft.AspNetCore.Components.Authorization
 @using blazor_client.Contacts
 @using shared.Enums
 @using shared.Models
@@ -8,6 +9,7 @@
 @inject HttpClient Http
 @inject NavigationManager NavManager
 @inject IApiService apiService;
+@inject AuthenticationStateProvider AuthStateProvider
 
 <PageTitle>Add Car</PageTitle> 
 
@@ -107,6 +109,12 @@
     
     protected override async Task OnInitializedAsync()
     {
+        var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+        if (!authState.User.Identity?.IsAuthenticated ?? false)
+        {
+            NavManager.NavigateTo("/login");
+        }
+
         var carArray = await apiService.GetAllCarsAsync();
         var usersArray = await apiService.GetUsersAsync();
         var parsedCars = carArray?.ToList() ?? new List<CarDto>();

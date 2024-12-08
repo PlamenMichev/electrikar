@@ -1,0 +1,23 @@
+@using Blazored.LocalStorage
+@using Microsoft.AspNetCore.Components.Authorization
+@using blazor_client.Auth
+@inject ILocalStorageService LocalStorage
+@inject AuthenticationStateProvider AuthStateProvider
+@inject NavigationManager Navigation
+
+<button class="btn btn-danger" @onclick="Logout">Logout</button>
+
+@code {
+    private async Task Logout()
+    {
+        // Remove the token from local storage
+        await LocalStorage.RemoveItemAsync("authToken");
+
+        // Notify the authentication state provider
+        var authProvider = (CustomAuthStateProvider)AuthStateProvider;
+        authProvider.NotifyAuthenticationStateChanged();
+
+        // Redirect to the login page
+        Navigation.NavigateTo("/login");
+    }
+}
