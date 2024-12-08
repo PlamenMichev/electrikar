@@ -51,11 +51,14 @@
 
     <div class="form-group col-xs-12 col-md-6">
         <label for="userIdInput">User</label>
-        <InputNumber @bind-Value="userIdInput"
-                     class="@UserIdInputClass"
-                     placeholder="Enter user id"
-                     id="userIdInput"
-                     required />
+      
+      <select @bind="userIdInput" class="@CarInputClass" id="carInput" required>
+            @foreach (var user in users)
+            {
+                <option value="@user.Id">@user.LegalName</option>
+            }
+        </select>
+        
         <div class="invalid-feedback">
             @(userIdInputErrorMessage ?? @userIdInputErrorMessage)
         </div>
@@ -91,6 +94,7 @@
     private string carInput = string.Empty;
     private string? carInputErrorMessage;
     
+    private IEnumerable<UserDto> users = new List<UserDto>();
     private int? userIdInput;
     private string? userIdInputErrorMessage;
     
@@ -104,12 +108,19 @@
     protected override async Task OnInitializedAsync()
     {
         var carArray = await apiService.GetAllCarsAsync();
+        var usersArray = await apiService.GetUsersAsync();
         var parsedCars = carArray?.ToList() ?? new List<CarDto>();
+        var parsedUsers = usersArray?.ToList() ?? new List<UserDto>();
+
+            Console.WriteLine(parsedCars.Count());
+            Console.WriteLine(parsedUsers.Count());
         
-        if (parsedCars.Any())
+        if (parsedCars.Any() && parsedUsers.Any())
         {
             cars = parsedCars;
             carInput = cars.First().RegistrationNumber;
+            users = parsedUsers;
+            userIdInput = users.First().Id;
         }
         else // If there are no cars go to the add car page
         {

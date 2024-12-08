@@ -14,4 +14,5 @@ public interface IApiService
     Task<string?> UpdateRentalAsync(int id, RentalDto rental);
     Task<string?> DeleteRentalAsync(int rentalId);
     Task<string?> DeleteCarAsync(int carId);
+    Task<IEnumerable<UserDto>> GetUsersAsync();
 }

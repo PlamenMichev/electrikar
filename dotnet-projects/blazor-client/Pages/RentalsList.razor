@@ -34,6 +34,7 @@ else
         <thead>
             <tr>
                 <th>Car reg number</th>
+                <th>User</th>
                 <th>Start Date</th>
                 <th>End Date</th>
                 <th>Status</th>
@@ -46,6 +47,7 @@ else
             {
                 <tr>
                     <td>@rental.CarRegNumber</td>
+                    <td>@rental.User.LegalName</td>
                     <td>@rental.StartDate.ToString("dd-MM-yyyy HH:mm")</td>
                     <td>@rental.EndDate.ToString("dd-MM-yyyy HH:mm")</td>
                     <td>@rental.Status</td>

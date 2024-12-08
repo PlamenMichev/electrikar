@@ -105,6 +105,7 @@ public class UsersServiceImpl extends UsersServiceGrpc.UsersServiceImplBase
     }
   }
 
+  @Override
   public void getUsersList(Empty request, StreamObserver<UsersList> responseObserver)
   {
     try
