@@ -187,4 +187,24 @@ public class ApiService : IApiService
             return new List<UserDto>();
         }
     }
+
+    public async Task<string> LoginAsync(LoginModel login)
+    {
+        try
+        {
+            var response = await _httpClient.PostAsJsonAsync($"/users/login", login);
+
+            if (response.IsSuccessStatusCode)
+            {
+                var token = await response.Content.ReadAsStringAsync();
+                return token;
+            }
+
+            return "Invalid login";
+        }
+        catch (Exception ex)
+        {
+            return ex.Message;
+        }
+    }
 }

@@ -53,7 +53,7 @@ public class UsersService : IUsersService
         };
     }
 
-    public async Task<IEnumerable<UserDto>> GetUsersAsync()
+    public async Task<IEnumerable<UserDto>> GetUsersAsync(bool includePasswords = false)
     {
         var client = GrpcConnector.ConnectUsersServiceAsync();
         var response = await client.getUsersListAsync(new EmptyUser());
@@ -67,6 +67,7 @@ public class UsersService : IUsersService
             Cpr = user.Cpr,
             IsAdmin = user.IsAdmin,
             IsBanned = user.IsBanned,
+            Password = includePasswords ? user.Password : null,
         });
     }
 

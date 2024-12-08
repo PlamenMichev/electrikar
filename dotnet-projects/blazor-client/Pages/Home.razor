@@ -1,7 +1,21 @@
 ﻿@page "/"
+@using Microsoft.AspNetCore.Components.Authorization;
+@inject NavigationManager Navigation;
+@inject AuthenticationStateProvider AuthStateProvider
 
 <PageTitle>Home</PageTitle>
 
 <h1>Hello drivers!</h1>
 
 Welcome to electrikar!
+
+@code {
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+        if (!authState.User.Identity?.IsAuthenticated ?? false)
+        {
+            Navigation.NavigateTo("/login");
+        }
+    }
+}
