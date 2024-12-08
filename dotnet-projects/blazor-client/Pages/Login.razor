@@ -19,8 +19,8 @@
                 <div class="card-body">
                     <form @onsubmit="HandleLogin">
                         <div class="mb-3">
-                            <label for="username" class="form-label">Username</label>
-                            <input type="text" id="username" class="form-control" @bind="loginRequest.Email" placeholder="Enter email" required />
+                            <label for="email" class="form-label">Email</label>
+                            <input type="text" id="email" class="form-control" @bind="loginRequest.Email" placeholder="Enter email" required />
                         </div>
                         <div class="mb-3">
                             <label for="password" class="form-label">Password</label>
@@ -43,6 +43,9 @@
                         @errorMessage
                     </div>
                 }
+                <div class="card-footer text-center">
+                    <p>Don't have an account? <a href="/register">Register here</a></p>
+                </div>
             </div>
         </div>
     </div>
@@ -61,7 +64,7 @@
             var response =  await apiService.LoginAsync(loginRequest);
             if (response == null)
             {
-                errorMessage = "Invalid username or password";
+                errorMessage = "Invalid email or password";
                 isLoading = false;
                 return;
             }

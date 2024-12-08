@@ -206,4 +206,23 @@ public class ApiService : IApiService
             throw new Exception(ex.Message);
         }
     }
+
+    public async Task<string?> CreateUserAsync(CreateUserModel user)
+    {
+        try
+        {
+            var response = await _httpClient.PostAsJsonAsync($"/users", user);
+
+            if (response.IsSuccessStatusCode)
+            {
+                return null;
+            }
+
+            return "The user could not be created";
+        }
+        catch (Exception ex)
+        {
+            return ex.Message;
+        }
+    }
 }

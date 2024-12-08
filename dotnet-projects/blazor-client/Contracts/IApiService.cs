@@ -17,4 +17,5 @@ public interface IApiService
     Task<string?> DeleteCarAsync(int carId);
     Task<IEnumerable<UserDto>> GetUsersAsync();
     Task<TokenResponse?> LoginAsync(LoginModel login);
+    Task<string?> CreateUserAsync(CreateUserModel user);
 }

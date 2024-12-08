@@ -22,6 +22,7 @@ public class UsersService : IUsersService
                 Email = user.Email,
                 Phone = user.Phone,
                 Cpr = user.Cpr,
+                Password = user.Password,
                 IsAdmin = false,
                 IsBanned = false,
             }
@@ -82,6 +83,7 @@ public class UsersService : IUsersService
                 Email = user.Email,
                 Phone = user.Phone,
                 Cpr = user.Cpr,
+                Password = user.Password,
                 IsAdmin = user.IsAdmin,
                 IsBanned = user.IsBanned,
             }
