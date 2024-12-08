@@ -1,10 +1,5 @@
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using dotnet_server.Contracts;
 using dotnet_server.grpc;
-using Google.Protobuf.WellKnownTypes;
-using Grpc.Net.Client;
 using RepositoryGrpcService;
 using shared.Enums;
 using shared.Models;
@@ -13,6 +8,13 @@ namespace dotnet_server.Services
 {
     public class RentalsService : IRentalService
     {
+        private readonly IUsersService usersService;
+
+        public RentalsService(IUsersService usersService)
+        {
+            this.usersService = usersService;
+        }
+
         public async Task<RentalDto> CreateRentalAsync(RentalDto rental)
         {
             var request = new CreateRentalRequest
@@ -47,7 +49,8 @@ namespace dotnet_server.Services
         {
             var client = GrpcConnector.ConnectRentalServiceAsync();
             var response = await client.getAllRentalsAsync(new EmptyRental());
-            return response.Rentals.Select(r => new RentalDto
+
+            var result = response.Rentals.Select(r => new RentalDto
             {
                 Id = r.Id,
                 CarRegNumber = r.CarRegNumber,
@@ -57,8 +60,11 @@ namespace dotnet_server.Services
                 DropDate = DateTimeOffset.FromUnixTimeMilliseconds(r.DropDate),
                 Status = (RentalStatus)r.Status,
                 CustomerComment = r.CustomerComment,
-                OrganizerComment = r.OrganizerComment
+                OrganizerComment = r.OrganizerComment,
+                User = this.usersService.GetUserAsync((int)r.UserId).GetAwaiter().GetResult(),
             });
+
+            return result;
         }
 
         public async Task<RentalDto> GetRentalAsync(int id)
