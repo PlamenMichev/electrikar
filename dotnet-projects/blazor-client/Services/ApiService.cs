@@ -99,6 +99,19 @@ public class ApiService : IApiService
         }
     }
 
+    public async Task<string?> EditRentalAsync(int id, RentalDto rental)
+    {
+        try
+        {
+            await _httpClient.PutAsJsonAsync($"/rental/{id}", rental);
+            return null;
+        }
+        catch (Exception ex)
+        {
+            return ex.Message;
+        }
+    }
+
     public async Task<RentalDto[]?> GetAllRentalsAsync()
     {
         try

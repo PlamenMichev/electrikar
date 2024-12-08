@@ -112,9 +112,6 @@
         var parsedCars = carArray?.ToList() ?? new List<CarDto>();
         var parsedUsers = usersArray?.ToList() ?? new List<UserDto>();
 
-            Console.WriteLine(parsedCars.Count());
-            Console.WriteLine(parsedUsers.Count());
-        
         if (parsedCars.Any() && parsedUsers.Any())
         {
             cars = parsedCars;
@@ -126,8 +123,6 @@
         {
             NavManager.NavigateTo("/add-car");
         }
-        
-        // Get users
     }
     
     private async Task Submit()
@@ -162,6 +157,7 @@
         isSubmitting = false;
         NavManager.NavigateTo("/rental-list?rental-added=true");
     }
+
 
     private bool ValidateInputs()
     {
@@ -213,14 +209,8 @@
         }
         
         // USER VALIDATION
-        
         if (userIdInput < 0 || userIdInput == null) {
             userIdInputErrorMessage = "Please provide a valid user ID.";
-            validated = false;
-        }
-        else if (false) // TODO: Make sure user exists
-        {
-            userIdInputErrorMessage = "This user does not exist";
             validated = false;
         }
         else

@@ -9,6 +9,7 @@
 @if(car == null) {
   <div class='spinner-border text-primary' role='status'></div>   
 }
+
 else {
     <form @onsubmit="Submit" class="row">
     <div class="form-group col-xs-12 col-md-6">
@@ -107,14 +108,14 @@ else {
     private Make makeInput;
     private CarModel modelInput;
     private CarType carTypeInput;
-    private byte[] fileInput;
+    private byte[]? fileInput;
     private string? FileBase64;
     private string? carImageUrl;
     private bool isFileLoading;
-    private string regNumberInputErrorMessage;
+    private string? regNumberInputErrorMessage;
     private bool isSubmitting;
     private CarPostModel? car;
-    [Parameter] public string RegistrationNumber { get; set; }
+    [Parameter] public string? RegistrationNumber { get; set; }
 
     private async Task Submit()
     {   
@@ -128,7 +129,7 @@ else {
             return;
         }
 
-        car.RegistrationNumber = regNumberInput ?? string.Empty;
+        car!.RegistrationNumber = regNumberInput ?? string.Empty;
         car.Color = colorInput;
         car.Make = makeInput;
         car.Model = modelInput;

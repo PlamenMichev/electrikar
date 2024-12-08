@@ -35,7 +35,7 @@
         <select @bind="makeInput" class="form-control" id="makeInput" required>
             @foreach (var make in Enum.GetValues(typeof(Make)))
             {
-            <option value="@make">@make</option>
+                <option value="@make">@make</option>
             }
         </select>
         <div class="invalid-feedback">

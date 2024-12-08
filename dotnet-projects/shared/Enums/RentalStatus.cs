@@ -5,6 +5,6 @@ namespace shared.Enums
         Pending,
         Confirmed,
         Cancelled,
-        Completed
+        Completed,
     }
 }

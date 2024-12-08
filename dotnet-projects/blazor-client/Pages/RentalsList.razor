@@ -46,8 +46,8 @@ else
             @foreach (var rental in rental)
             {
                 <tr>
-                    <td>@rental.CarRegNumber</td>
-                    <td>@rental.User.LegalName</td>
+                    <td style="cursor: pointer;" @onclick="() => NavigateToEditRental(rental.Id.ToString())">@rental.CarRegNumber</td>
+                    <td>@rental.User?.LegalName</td>
                     <td>@rental.StartDate.ToString("dd-MM-yyyy HH:mm")</td>
                     <td>@rental.EndDate.ToString("dd-MM-yyyy HH:mm")</td>
                     <td>@rental.Status</td>
@@ -61,6 +61,11 @@ else
 @code {
     private RentalDto[]? rental;
     private bool isRentalAdded;
+
+    void NavigateToEditRental(string rentalId)
+    {
+        NavManager.NavigateTo($"/edit-rental/{rentalId}");
+    }
 
     protected override async Task OnInitializedAsync()
     {

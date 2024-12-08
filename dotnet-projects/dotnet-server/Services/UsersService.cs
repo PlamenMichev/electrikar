@@ -42,9 +42,7 @@ public class UsersService : IUsersService
     public async Task<UserDto> GetUserAsync(int id)
     {
         var client = GrpcConnector.ConnectUsersServiceAsync();
-        var response = await client.getUserAsync(
-            new GetUserRequest { LegalName = "Plamen Michev" }
-        );
+        var response = await client.getUserAsync(new GetUserRequest { Id = id, });
         return new UserDto
         {
             Id = (int)response.Id,

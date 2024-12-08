@@ -6,6 +6,7 @@ public interface IApiService
 {
     Task<string?> AddCarAsync(CarPostModel car);
     Task<string?> AddRentalAsync(RentalDto rental);
+    Task<string?> EditRentalAsync(int id, RentalDto rental);
     Task<CarDto[]?> GetAllCarsAsync();
     Task<RentalDto[]?> GetAllRentalsAsync();
     Task<RentalDto?> GetRentalByIdAsync(int rentalId);
