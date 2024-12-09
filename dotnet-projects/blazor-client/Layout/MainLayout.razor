@@ -34,7 +34,7 @@
         AuthStateProvider.AuthenticationStateChanged += OnAuthenticationStateChanged;
     }
 
-      private async void OnAuthenticationStateChanged(Task<AuthenticationState> task)
+    private async void OnAuthenticationStateChanged(Task<AuthenticationState> task)
     {
         var authState = await task;
         isAuthenticated = authState.User.Identity?.IsAuthenticated ?? false;
