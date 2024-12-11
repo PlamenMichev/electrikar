@@ -107,6 +107,10 @@
     private string CarInputClass => string.IsNullOrEmpty(carInputErrorMessage) ? "form-control" : "form-control is-invalid";
     private string UserIdInputClass => string.IsNullOrEmpty(userIdInputErrorMessage) ? "form-control" : "form-control is-invalid";
     
+    // User props
+    private bool isAdmin = false;
+    private string userName = string.Empty;
+
     protected override async Task OnInitializedAsync()
     {
         var authState = await AuthStateProvider.GetAuthenticationStateAsync();
@@ -115,6 +119,9 @@
             NavManager.NavigateTo("/login");
         }
 
+        isAdmin = authState.User.Claims.Any(c => c.Type == "IsAdmin" && c.Value == "True");
+        userName = authState.User.Identity?.Name ?? string.Empty;
+
         var carArray = await apiService.GetAllCarsAsync();
         var usersArray = await apiService.GetUsersAsync();
         var parsedCars = carArray?.ToList() ?? new List<CarDto>();
@@ -122,6 +129,11 @@
 
         if (parsedCars.Any() && parsedUsers.Any())
         {
+            if (!isAdmin)
+            {
+                parsedUsers = parsedUsers.Where(c => c.LegalName == userName).ToList();
+            }
+
             cars = parsedCars;
             carInput = cars.First().RegistrationNumber;
             users = parsedUsers;
@@ -129,7 +141,13 @@
         }
         else // If there are no cars go to the add car page
         {
-            NavManager.NavigateTo("/add-car");
+            if (isAdmin)
+            {
+                NavManager.NavigateTo("/add-car");
+            }
+            else {
+                NavManager.NavigateTo("/");
+            }
         }
     }
     
@@ -163,7 +181,14 @@
         }
 
         isSubmitting = false;
-        NavManager.NavigateTo("/rental-list?rental-added=true");
+        if (isAdmin)
+        {
+            NavManager.NavigateTo("/rental-list?rental-added=true");
+        }
+        else
+        {
+            NavManager.NavigateTo("/");
+        }
     }
 
 

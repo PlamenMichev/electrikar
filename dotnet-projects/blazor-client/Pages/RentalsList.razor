@@ -15,11 +15,11 @@
 
 <p>Those are the rentals in the system</p>
 
-@if (rental == null)
+@if (rentals == null)
 {
     <p><em>Loading...</em></p>
 }
-else if (rental.Length == 0)
+else if (rentals.Length == 0)
 {
     <p><em>No rental found</em></p>
 }
@@ -45,15 +45,62 @@ else
             </tr>
         </thead>
         <tbody>
-            @foreach (var rental in rental)
+            @foreach (var rental in rentals)
             {
                 <tr>
-                    <td style="cursor: pointer;" @onclick="() => NavigateToEditRental(rental.Id.ToString())">@rental.CarRegNumber</td>
-                    <td>@rental.User?.LegalName</td>
-                    <td>@rental.StartDate.ToString("dd-MM-yyyy HH:mm")</td>
-                    <td>@rental.EndDate.ToString("dd-MM-yyyy HH:mm")</td>
-                    <td>@rental.Status</td>
-                    <td>@(rental.DropDate.ToUnixTimeMilliseconds() == 0 ? "None" : rental.DropDate.ToString("dd-MM-yyyy HH:mm"))</td>
+                    <td style="cursor: pointer; vertical-align: middle;" @onclick="() => NavigateToEditRental(rental.Id.ToString())">@rental.CarRegNumber</td>
+                    <td style="vertical-align: middle;">@rental.User?.LegalName</td>
+                    <td style="vertical-align: middle;">@rental.StartDate.ToString("dd-MM-yyyy HH:mm")</td>
+                    <td style="vertical-align: middle;">@rental.EndDate.ToString("dd-MM-yyyy HH:mm")</td>
+                    <td style="vertical-align: middle;">@rental.Status</td>
+                    <td style="vertical-align: middle;">@(rental.DropDate.ToUnixTimeMilliseconds() == 0 ? "None" : rental.DropDate.ToString("dd-MM-yyyy HH:mm"))</td>
+                    @if (rental.Status == RentalStatus.Pending)
+                    {
+                        <td style="vertical-align: middle;">
+                             <button disabled="@isSubmitting" @onclick="() => ChangeStatus(RentalStatus.Cancelled, rental.Id)" class="btn btn-danger mt-2 mr-2" style="width: 100px">
+                                @if (isSubmitting)
+                                {
+                                    <div class="spinner-border text-white" role="status" />
+                                }
+                                else
+                                {
+                                    <span>Cancel</span>
+                                }
+                            </button>
+
+                             <button disabled="@isSubmitting" @onclick="() => ChangeStatus(RentalStatus.Confirmed, rental.Id)" class="btn btn-success mt-2" style="width: 100px">
+                                @if (isSubmitting)
+                                {
+                                    <div class="spinner-border text-white" role="status" />
+                                }
+                                else
+                                {
+                                    <span>Confirm</span>
+                                }
+                            </button>
+                        </td>
+                    }
+                    else if (rental.Status == RentalStatus.Confirmed) {
+                        <td style="vertical-align: middle;">
+                            <button disabled="@isSubmitting" 
+                                style="background-color: #ffc107; width: 100px;"
+                                @onclick="() => ChangeStatus(RentalStatus.Completed, rental.Id)"  
+                                class="btn btn-warning mt-2 mr-2">
+                                    @if (isSubmitting)
+                                    {
+                                        <div class="spinner-border text-white" role="status" />
+                                    }
+                                    else
+                                    {
+                                        <span>Drop Off</span>
+                                    }
+                            </button>
+                        </td>
+                    }
+                    else
+                    {
+                        <td></td>
+                    }
                 </tr>
             }
         </tbody>
@@ -61,8 +108,10 @@ else
 }
 
 @code {
-    private RentalDto[]? rental;
+    private RentalDto[]? rentals;
     private bool isRentalAdded;
+    private bool isSubmitting;
+
 
     void NavigateToEditRental(string rentalId)
     {
@@ -86,7 +135,36 @@ else
             NavManager.NavigateTo("/rental-list");
         }
 
-        rental = await apiService.GetAllRentalsAsync();
+        rentals = await apiService.GetAllRentalsAsync();
+    }
+
+    private async Task ChangeStatus(RentalStatus status, int rentalId) {
+        if (isSubmitting) return;
+
+        isSubmitting = true;
+        var refetchedRental = await apiService.GetRentalByIdAsync(rentalId);
+        if (refetchedRental == null)
+        {
+            isSubmitting = false;
+            return;
+        }
+
+        refetchedRental.Status = status;
+        if (status == RentalStatus.Completed)
+        {
+            refetchedRental.DropDate = DateTime.Now.AddHours(2);
+        }
+
+        var serverErrorMessage = await apiService.EditRentalAsync(rentalId, refetchedRental);
+
+        if (!string.IsNullOrEmpty(serverErrorMessage))
+        {
+            isSubmitting = false;
+            return;
+        }
+
+        isSubmitting = false;
+        await OnInitializedAsync();
     }
 
 }
