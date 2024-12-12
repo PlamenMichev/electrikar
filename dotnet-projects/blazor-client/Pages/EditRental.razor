@@ -87,7 +87,7 @@ else {
                 <div class="col">
                     <div class="d-flex justify-content-end flex-wrap gap-2">
                         @if (rental.Status == RentalStatus.Confirmed) {
-                            <button disabled="@isSubmitting"  @onclick="() => ChangeStatus(RentalStatus.Completed)"  class="btn btn-warning mt-2 mr-2" style="width: 100px">
+                            <button disabled="@(isSubmitting || DateTime.Now < rental.EndDate)"  @onclick="() => ChangeStatus(RentalStatus.Completed)"  class="btn btn-warning mt-2 mr-2" style="width: 100px">
                                 @if (isSubmitting)
                                 {
                                     <div class="spinner-border text-white" role="status" />
@@ -333,12 +333,6 @@ else {
         {
             startDateInputErrorMessage = "Start date must be earlier than end date.";
             endDateInputErrorMessage = "Start date must be earlier than end date.";
-            validated = false;
-        }
-
-        if (rental.StartDate < DateTime.Now.AddMinutes(15)) // This is current time + 15 minutes
-        {
-            startDateInputErrorMessage = "Start date is too early.";
             validated = false;
         }
         

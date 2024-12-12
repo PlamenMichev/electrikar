@@ -55,9 +55,9 @@ Welcome to electrikar!
                             </button>
                         </td>
                     }
-                    else if (rental.Status == RentalStatus.Confirmed) {
+                    else if (rental.Status == RentalStatus.Confirmed ) {
                         <td style="vertical-align: middle;">
-                            <button disabled="@isSubmitting" 
+                            <button disabled="@(isSubmitting || DateTime.Now < rental.EndDate)" 
                                 style="background-color: #ffc107; width: 100px;"
                                 @onclick="() => ChangeStatus(RentalStatus.Completed, rental.Id)"  
                                 class="btn btn-warning mt-2 mr-2">

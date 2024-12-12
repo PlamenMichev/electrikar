@@ -6,6 +6,7 @@
 @using System;
 @using System.Collections.Generic;
 @using System.Linq;
+@using blazor_client.Components;
 @inject HttpClient Http
 @inject NavigationManager NavManager
 @inject IApiService apiService;
@@ -65,6 +66,8 @@
             @(userIdInputErrorMessage ?? @userIdInputErrorMessage)
         </div>
     </div>
+
+    <RentalPriceLabel StartDate="@(startDateInput ?? DateTime.Now)" EndDate="@(endDateInput ?? DateTime.Now)" Car="@cars.FirstOrDefault(c => c.RegistrationNumber == carInput)" />
 
     <div class="row">
         <div class="col">
@@ -235,12 +238,6 @@
             validated = false;
         }
 
-        if (startDateInput < DateTime.Now.AddMinutes(15)) // This is current time + 15 minutes
-        {
-            startDateInputErrorMessage = "Start date is too early.";
-            validated = false;
-        }
-        
         // USER VALIDATION
         if (userIdInput < 0 || userIdInput == null) {
             userIdInputErrorMessage = "Please provide a valid user ID.";
