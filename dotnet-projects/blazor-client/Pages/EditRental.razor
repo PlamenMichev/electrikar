@@ -3,6 +3,7 @@
 @using blazor_client.Contacts
 @using shared.Enums
 @using shared.Models
+@using blazor_client.Components;
 @inject NavigationManager NavManager
 @inject IApiService apiService
 @inject AuthenticationStateProvider AuthStateProvider
@@ -82,6 +83,9 @@ else {
                 <textarea @bind="rental.CustomerComment" id="customerComment" class="form-control" disabled="@(isAdmin)">
                 </textarea>
             </div>
+
+            <RentalPriceLabel StartDate="@rental.StartDate" EndDate="@rental.EndDate" Car="@cars.FirstOrDefault(c => c.RegistrationNumber == rental.CarRegNumber)" />
+
 
             <div class="row">
                 <div class="col">
