@@ -84,7 +84,7 @@ else {
                 </textarea>
             </div>
 
-            <RentalPriceLabel StartDate="@rental.StartDate" EndDate="@rental.EndDate" Car="@cars.FirstOrDefault(c => c.RegistrationNumber == rental.CarRegNumber)" />
+            <RentalPriceLabel StartDate="@rental.StartDate.Date" EndDate="@rental.EndDate.Date" Car="@cars.FirstOrDefault(c => c.RegistrationNumber == rental.CarRegNumber)" />
 
 
             <div class="row">
