@@ -10,6 +10,10 @@ public enum CarMake
   Volkswagen,
   Ford;
 
+  /**
+   * Get the value of the enum
+   * @return
+   */
   public static CarMake valueOf(int value)
   {
     return Arrays.stream(values()).filter(type -> type

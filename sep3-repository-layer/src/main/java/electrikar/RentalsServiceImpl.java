@@ -10,6 +10,11 @@ import java.sql.Timestamp;
 public class RentalsServiceImpl
     extends RentalsServiceGrpc.RentalsServiceImplBase
 {
+  /**
+   * Create a new rental
+   * @param request
+   * @param responseObserver
+   */
   @Override
   public void create(CreateRentalRequest request, StreamObserver<CreateRentalResponse> responseObserver)
   {
@@ -30,6 +35,11 @@ public class RentalsServiceImpl
   }
 
 
+  /**
+   * Update a rental
+   * @param request
+   * @param responseObserver
+   */
   @Override
   public void updateRental(UpdateRentalRequest request, StreamObserver<UpdateRentalResponse> responseObserver)
   {
@@ -58,6 +68,11 @@ public class RentalsServiceImpl
     }
   }
 
+  /**
+   * Delete a rental
+   * @param request
+   * @param responseObserver
+   */
   @Override
   public void deleteRental(DeleteRentalRequest request, StreamObserver<DeleteRentalResponse> responseObserver)
   {
@@ -76,6 +91,11 @@ public class RentalsServiceImpl
     }
   }
 
+  /**
+   * Get all rentals
+   * @param request
+   * @param responseObserver
+   */
   public void getAllRentals(Empty request, StreamObserver<RentalsList> responseObserver)
   {
     try
@@ -108,6 +128,11 @@ public class RentalsServiceImpl
     }
   }
 
+  /**
+   * Get a rental by its id
+   * @param request
+   * @param responseObserver
+   */
   @Override
   public void getRental(GetRentalRequest request, StreamObserver<GetRentalResponse> responseObserver)
   {

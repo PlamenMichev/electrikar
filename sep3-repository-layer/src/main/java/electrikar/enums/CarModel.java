@@ -19,6 +19,10 @@ public enum CarModel
   // Ford models
   Ford_Edge, Ford_Escape, Ford_Explorer, Ford_Fiesta, Ford_Kuga, Ford_Mustang, Ford_Ranger;
 
+  /**
+   * Get the value of the enum
+   * @return
+   */
   public static CarModel valueOf(int value)
   {
     return Arrays.stream(values()).filter(type -> type

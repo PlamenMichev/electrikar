@@ -15,11 +15,20 @@ public class SqlCarDao implements CarDao
   private static SqlCarDao instance;
   private final DatabaseConnector dbConnector = new DatabaseConnector();
 
+  /**
+   * Constructor for SqlCarDao
+   * @throws SQLException
+   */
   public SqlCarDao() throws SQLException
   {
     DriverManager.registerDriver(new org.postgresql.Driver());
   }
 
+  /**
+   * Get instance of SqlCarDao
+   * @return
+   * @throws SQLException
+   */
   public static synchronized SqlCarDao getInstance() throws SQLException
   {
     if (instance == null)
@@ -29,7 +38,19 @@ public class SqlCarDao implements CarDao
     return instance;
   }
 
-
+  /**
+   * Create a new car in the database
+   * @param regNum
+   * @param color
+   * @param make
+   * @param model
+   * @param type
+   * @param price
+   * @param image
+   * @param hasRentals
+   * @return
+   * @throws SQLException
+   */
   @Override public Car createCar(String regNum, CarColor color,
                                  CarMake make, CarModel model, CarType type, int price, String image, boolean hasRentals) throws SQLException
   {
@@ -48,6 +69,12 @@ public class SqlCarDao implements CarDao
     }
   }
 
+  /**
+   * Update a car in the database
+   * @param oldReg
+   * @param car
+   * @throws SQLException
+   */
   @Override public void updateCar(String oldReg, Car car) throws SQLException
   {
     try(Connection connection = dbConnector.connect())
@@ -65,6 +92,12 @@ public class SqlCarDao implements CarDao
     }
   }
 
+  /**
+   * Get a car by its registration number
+   * @param reg
+   * @return
+   * @throws SQLException
+   */
   @Override public Car getCarByReg(String reg) throws SQLException
   {
     try(Connection connection = dbConnector.connect())
@@ -94,6 +127,11 @@ public class SqlCarDao implements CarDao
     }
   }
 
+  /**
+   * Delete a car by its registration number
+   * @param reg
+   * @throws SQLException
+   */
   @Override public void deleteCarByReg(String reg) throws SQLException
   {
     try(Connection connection = dbConnector.connect())
@@ -109,6 +147,11 @@ public class SqlCarDao implements CarDao
     }
   }
 
+  /**
+   * Get all cars in the database
+   * @return
+   * @throws SQLException
+   */
   @Override
     public ArrayList<Car> getAll() throws SQLException
     {

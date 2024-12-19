@@ -9,6 +9,11 @@ public enum RentalStatus
   COMPLETED,
   CANCELLED;
 
+  /**
+   * Get the value of the enum
+   * @param value
+   * @return
+   */
   public static RentalStatus valueOf(int value)
   {
     return Arrays.stream(values()).filter(type -> type

@@ -21,6 +21,10 @@ public enum CarColor
   Magenta,
   Lime;
 
+  /**
+   * Get the value of the enum
+   * @return
+   */
   public static CarColor valueOf(int value)
   {
     return Arrays.stream(values()).filter(type -> type

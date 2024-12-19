@@ -12,6 +12,12 @@ import java.sql.SQLException;
 import java.util.Base64;
 
 public class CarsServiceImpl extends CarsServiceGrpc.CarsServiceImplBase {
+
+    /**
+     * Create a new car
+     * @param request
+     * @param responseObserver
+     */
     @Override
     public void create(
             CreateCarRequest request, StreamObserver<CreateCarResponse> responseObserver) {
@@ -40,6 +46,11 @@ public class CarsServiceImpl extends CarsServiceGrpc.CarsServiceImplBase {
         }
     }
 
+    /**
+     * Update a car
+     * @param request
+     * @param responseObserver
+     */
     @Override public void updateCar(UpdateCarRequest request,
         StreamObserver<UpdateCarResponse> responseObserver)
     {
@@ -61,6 +72,11 @@ public class CarsServiceImpl extends CarsServiceGrpc.CarsServiceImplBase {
         }
     }
 
+    /**
+     * Delete a car
+     * @param request
+     * @param responseObserver
+     */
     @Override public void deleteCar(DeleteCarRequest request,
         StreamObserver<DeleteCarResponse> responseObserver)
     {
@@ -75,6 +91,11 @@ public class CarsServiceImpl extends CarsServiceGrpc.CarsServiceImplBase {
             e.printStackTrace();}
     }
 
+    /**
+     * Get all cars
+     * @param request
+     * @param responseObserver
+     */
     @Override
     public void getAllCars(Empty request, StreamObserver<CarsList> responseObserver) {
         try {
@@ -102,6 +123,11 @@ public class CarsServiceImpl extends CarsServiceGrpc.CarsServiceImplBase {
         }
     }
 
+    /**
+     * Get a car by its registration number
+     * @param request
+     * @param responseObserver
+     */
 @Override
 public void getCar(GetCarRequest request, StreamObserver<GetCarResponse> responseObserver)
 {

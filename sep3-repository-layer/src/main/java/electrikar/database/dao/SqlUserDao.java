@@ -11,11 +11,20 @@ public class SqlUserDao implements UserDao
   private static SqlUserDao instance;
   private final DatabaseConnector dbConnector = new DatabaseConnector();
 
+  /**
+   * Constructor for SqlUserDao
+   * @throws SQLException
+   */
   public SqlUserDao() throws SQLException
   {
     DriverManager.registerDriver(new org.postgresql.Driver());
   }
 
+  /**
+   * Get instance of SqlUserDao
+   * @return
+   * @throws SQLException
+   */
   public static synchronized SqlUserDao getInstance() throws SQLException
   {
     if (instance == null)
@@ -25,8 +34,18 @@ public class SqlUserDao implements UserDao
     return instance;
   }
 
-
-
+  /**
+   * Create a new user in the database
+   * @param legalName
+   * @param email
+   * @param password
+   * @param cpr
+   * @param phone
+   * @param isAdmin
+   * @param isBanned
+   * @return
+   * @throws SQLException
+   */
   @Override public User createUser(String legalName, String email,
       String password, String cpr, String phone, boolean isAdmin,
       boolean isBanned) throws SQLException
@@ -61,6 +80,11 @@ public class SqlUserDao implements UserDao
     }
   }
 
+  /**
+   * Update a user in the database
+   * @param user
+   * @throws SQLException
+   */
   @Override public void updateUser(User user) throws SQLException
   {
     try(Connection connection = dbConnector.connect())
@@ -79,6 +103,12 @@ public class SqlUserDao implements UserDao
     }
   }
 
+  /**
+   * Get a user by its id
+   * @param id
+   * @return
+   * @throws SQLException
+   */
   @Override public User getUserById(int id) throws SQLException
   {
     try(Connection connection = dbConnector.connect())
@@ -104,6 +134,11 @@ public class SqlUserDao implements UserDao
 
   }
 
+  /**
+   * Delete a user by its id
+   * @param id
+   * @throws SQLException
+   */
   @Override public void deleteUserById(int id) throws SQLException
   {
     try(Connection connection = dbConnector.connect())
@@ -115,6 +150,11 @@ public class SqlUserDao implements UserDao
 
   }
 
+  /**
+   * Get all users in the database
+   * @return
+   * @throws SQLException
+   */
   @Override public ArrayList<User> getAll() throws SQLException
   {
     try(Connection connection = dbConnector.connect())
