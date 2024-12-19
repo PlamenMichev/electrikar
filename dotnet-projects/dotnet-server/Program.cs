@@ -16,6 +16,7 @@ var corsPolicyName = "AllowBlazorClient";
 builder.Services.AddTransient<ICarsService, CarsService>();
 builder.Services.AddSingleton<ICloudinaryService, CloudinaryService>();
 builder.Services.AddTransient<IRentalService, RentalsService>();
+builder.Services.AddTransient<IUsersService, UsersService>();
 builder.Services.AddCors(options =>
 {
     options.AddPolicy(

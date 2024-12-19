@@ -1,4 +1,8 @@
 ﻿@inherits LayoutComponentBase
+@using Microsoft.AspNetCore.Components.Authorization;
+@using blazor_client.Components;
+@inject AuthenticationStateProvider AuthStateProvider
+
 <div class="page">
     <div class="sidebar">
         <NavMenu />
@@ -6,7 +10,10 @@
 
     <main>
         <div class="top-row px-4">
-            <a href="https://learn.microsoft.com/aspnet/core/" target="_blank">About</a>
+            @if (isAuthenticated)
+            {
+                <LogoutButton />
+            }
         </div>
 
         <article class="content px-4">
@@ -14,3 +21,31 @@
         </article>
     </main>
 </div>
+
+@code {
+    private bool isAuthenticated = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+        isAuthenticated = authState.User.Identity?.IsAuthenticated ?? false;
+
+        // Subscribe to authentication state changes
+        AuthStateProvider.AuthenticationStateChanged += OnAuthenticationStateChanged;
+    }
+
+    private async void OnAuthenticationStateChanged(Task<AuthenticationState> task)
+    {
+        var authState = await task;
+        isAuthenticated = authState.User.Identity?.IsAuthenticated ?? false;
+
+        // Notify the UI of the state change
+        StateHasChanged();
+    }
+
+    public void Dispose()
+    {
+        // Unsubscribe from the event to avoid memory leaks
+        AuthStateProvider.AuthenticationStateChanged -= OnAuthenticationStateChanged;
+    }
+}

@@ -10,4 +10,5 @@ public class CarDto
     public CarType Type { get; set; }
     public Color Color { get; set; }
     public string? ImageUrl { get; set; }
+    public bool HasRentals { get; set; }
 }

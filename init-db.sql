@@ -7,7 +7,7 @@ CREATE TABLE "Car"(
     make VARCHAR(50) NOT NULL,
     type INT NOT NULL,
     price INT NOT NULL,
-    image VARCHAR(1024) NOT NULL
+    image varchar(1024) NOT NULL
 );
 
 CREATE TABLE "User"(
@@ -25,15 +25,13 @@ CREATE TABLE "Rental"(
     id SERIAL PRIMARY KEY,
     car_reg varchar(50) NOT NULL,
     customer_id INT NOT NULL,
-    start_date TIMESTAMP NOT NULL CHECK (start_date > NOW()),
+    start_date TIMESTAMP NOT NULL,
     end_date TIMESTAMP NOT NULL CHECK (end_date > start_date),
     drop_date TIMESTAMP NOT NULL CHECK (drop_date > start_date),
     status INT NOT NULL,
     customer_comment VARCHAR(50),
     organizer_comment VARCHAR(50),
-    FOREIGN KEY (car_reg) REFERENCES "Car"(reg_num),
+    FOREIGN KEY (car_reg) REFERENCES "Car"(reg_num) ON UPDATE CASCADE,
     FOREIGN KEY (customer_id) REFERENCES "User"(id)
 );
- INSERT INTO "Car"(reg_num, color, model, make, type, price, image) VALUES ('SDLF12K', '1', '2', '1', 3, 0,'afsdfasd');
 
-SELECT * FROM "Rental";

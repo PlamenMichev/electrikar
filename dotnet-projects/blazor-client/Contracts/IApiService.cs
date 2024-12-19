@@ -6,6 +6,7 @@ public interface IApiService
 {
     Task<string?> AddCarAsync(CarPostModel car);
     Task<string?> AddRentalAsync(RentalDto rental);
+    Task<string?> EditRentalAsync(int id, RentalDto rental);
     Task<CarDto[]?> GetAllCarsAsync();
     Task<RentalDto[]?> GetAllRentalsAsync();
     Task<RentalDto?> GetRentalByIdAsync(int rentalId);
@@ -14,4 +15,7 @@ public interface IApiService
     Task<string?> UpdateRentalAsync(int id, RentalDto rental);
     Task<string?> DeleteRentalAsync(int rentalId);
     Task<string?> DeleteCarAsync(int carId);
+    Task<IEnumerable<UserDto>> GetUsersAsync();
+    Task<TokenResponse?> LoginAsync(LoginModel login);
+    Task<string?> CreateUserAsync(CreateUserModel user);
 }

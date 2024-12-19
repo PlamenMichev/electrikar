@@ -27,7 +27,7 @@ public class ApiService : IApiService
             return ex.Message;
         }
     }
-    
+
     public async Task<CarDto[]?> GetAllCarsAsync()
     {
         try
@@ -53,7 +53,7 @@ public class ApiService : IApiService
             throw;
         }
     }
-    
+
     public async Task<string?> UpdateCarAsync(int regNumber, CarPostModel car)
     {
         try
@@ -69,7 +69,7 @@ public class ApiService : IApiService
             return ex.Message;
         }
     }
-    
+
     public async Task<string?> DeleteCarAsync(int regNumber)
     {
         try
@@ -98,7 +98,20 @@ public class ApiService : IApiService
             return ex.Message;
         }
     }
-    
+
+    public async Task<string?> EditRentalAsync(int id, RentalDto rental)
+    {
+        try
+        {
+            await _httpClient.PutAsJsonAsync($"/rental/{id}", rental);
+            return null;
+        }
+        catch (Exception ex)
+        {
+            return ex.Message;
+        }
+    }
+
     public async Task<RentalDto[]?> GetAllRentalsAsync()
     {
         try
@@ -111,7 +124,7 @@ public class ApiService : IApiService
             return null;
         }
     }
-    
+
     public async Task<RentalDto?> GetRentalByIdAsync(int Id)
     {
         try
@@ -124,7 +137,7 @@ public class ApiService : IApiService
             throw;
         }
     }
-    
+
     public async Task<string?> UpdateRentalAsync(int id, RentalDto rental)
     {
         try
@@ -150,6 +163,62 @@ public class ApiService : IApiService
                 return null;
 
             return $"Error: {response.StatusCode}";
+        }
+        catch (Exception ex)
+        {
+            return ex.Message;
+        }
+    }
+
+    public async Task<IEnumerable<UserDto>> GetUsersAsync()
+    {
+        try
+        {
+            var response = await _httpClient.GetAsync($"/users/all");
+            if (!response.IsSuccessStatusCode)
+                return new List<UserDto>();
+
+            return await response.Content.ReadFromJsonAsync<IEnumerable<UserDto>>()
+                ?? new List<UserDto>();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+            return new List<UserDto>();
+        }
+    }
+
+    public async Task<TokenResponse?> LoginAsync(LoginModel login)
+    {
+        try
+        {
+            var response = await _httpClient.PostAsJsonAsync($"/users/login", login);
+
+            if (response.IsSuccessStatusCode)
+            {
+                return await response.Content.ReadFromJsonAsync<TokenResponse>();
+            }
+
+            return null;
+        }
+        catch (Exception ex)
+        {
+            throw new Exception(ex.Message);
+        }
+    }
+
+    public async Task<string?> CreateUserAsync(CreateUserModel user)
+    {
+        try
+        {
+            var response = await _httpClient.PostAsJsonAsync($"/users", user);
+
+            if (response.IsSuccessStatusCode)
+            {
+                return null;
+            }
+
+            return "The user could not be created";
         }
         catch (Exception ex)
         {

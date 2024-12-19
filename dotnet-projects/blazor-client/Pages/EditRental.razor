@@ -1,0 +1,357 @@
+@page "/edit-rental/{RentalId}"
+@using Microsoft.AspNetCore.Components.Authorization
+@using blazor_client.Contacts
+@using shared.Enums
+@using shared.Models
+@using blazor_client.Components;
+@inject NavigationManager NavManager
+@inject IApiService apiService
+@inject AuthenticationStateProvider AuthStateProvider
+
+<PageTitle>Edit Rental</PageTitle>
+
+@if (rental == null) {
+  <div class='spinner-border text-primary' role='status'></div>   
+}
+else {
+    <p>Rental status: <span class="@currentStatusColor">@currentStatus</span></p>
+    <form @onsubmit="Submit" class="row needs-validation" novalidate>
+        <div class="form-group col-xs-12 col-md-6">
+            <label for="startDateInput">Start date</label>
+            <input type="datetime-local"
+                @bind="rental.StartDate"
+                class="@StartDateInputClass"
+                id="startDateInput"
+                disabled="@rental.Status != RentalStatus.Pending"
+                required>
+            <div class="invalid-feedback">
+                @(startDateInputErrorMessage ?? @startDateInputErrorMessage)
+            </div>
+        </div>
+
+        <div class="form-group col-xs-12 col-md-6">
+                <label for="endDateInput">End date</label>
+                <input type="datetime-local"
+                    @bind="rental.EndDate"
+                    class="@EndDateInputClass"
+                    id="endDateInput"
+                    disabled="@rental.Status != RentalStatus.Pending"
+                    required>
+                <div class="invalid-feedback">
+                    @(endDateInputErrorMessage ?? @endDateInputErrorMessage)
+                </div>
+            </div>
+            
+            <div class="form-group col-xs-12 col-md-6 mb-4">
+                <label for="carInput">Car</label> 
+                <select @bind="rental.CarRegNumber" class="@CarInputClass" id="carInput" required 
+                disabled="@rental.Status != RentalStatus.Pending">
+                    @foreach (var car in cars)
+                    {
+                        <option value="@car.RegistrationNumber">@car.Type, @car.Make</option> // TODO: Disable unavailable cars
+                    }
+                </select>
+                <div class="invalid-feedback">
+                    @(carInputErrorMessage ?? @carInputErrorMessage)
+                </div>
+            </div>
+
+            <div class="form-group col-xs-12 col-md-6">
+                <label for="userIdInput">User</label>
+            
+                <select @bind="rental.UserId" class="@CarInputClass" id="carInput" required 
+                disabled="@rental.Status != RentalStatus.Pending">
+                    @foreach (var user in users)
+                    {
+                        <option value="@user.Id">@user.LegalName</option>
+                    }
+                </select>
+                
+                <div class="invalid-feedback">
+                    @(userIdInputErrorMessage ?? @userIdInputErrorMessage)
+                </div>
+            </div>
+
+            <div class="form-group col-xs-12 col-md-6">
+                <label for="organizerComment">Organizer Comment</label>
+                <textarea @bind="rental.OrganizerComment" id="organizerComment" class="form-control" disabled="@(!isAdmin)">
+                </textarea>
+            </div>
+
+            <div class="form-group col-xs-12 col-md-6">
+                <label for="customerComment">Customer Comment</label>
+                <textarea @bind="rental.CustomerComment" id="customerComment" class="form-control" disabled="@(isAdmin)">
+                </textarea>
+            </div>
+
+            <RentalPriceLabel StartDate="@rental.StartDate.Date" EndDate="@rental.EndDate.Date" Car="@cars.FirstOrDefault(c => c.RegistrationNumber == rental.CarRegNumber)" />
+
+
+            <div class="row">
+                <div class="col">
+                    <div class="d-flex justify-content-end flex-wrap gap-2">
+                        @if (rental.Status == RentalStatus.Confirmed) {
+                            <button disabled="@(isSubmitting || DateTime.Now < rental.EndDate)"  @onclick="() => ChangeStatus(RentalStatus.Completed)"  class="btn btn-warning mt-2 mr-2" style="width: 100px">
+                                @if (isSubmitting)
+                                {
+                                    <div class="spinner-border text-white" role="status" />
+                                }
+                                else
+                                {
+                                    <span>Drop Off</span>
+                                }
+                            </button>
+                        }
+                        
+                        @if (rental.Status == RentalStatus.Pending) {
+                            <button disabled="@isSubmitting" @onclick="() => ChangeStatus(RentalStatus.Cancelled)" class="btn btn-danger mt-2 mr-2" style="width: 100px">
+                                @if (isSubmitting)
+                                {
+                                    <div class="spinner-border text-white" role="status" />
+                                }
+                                else
+                                {
+                                    <span>Cancel</span>
+                                }
+                            </button>
+                        }
+
+                        @if (rental.Status == RentalStatus.Pending && isAdmin) {
+                            <button disabled="@isSubmitting" @onclick="() => ChangeStatus(RentalStatus.Confirmed)" class="btn btn-success mt-2" style="width: 100px">
+                                @if (isSubmitting)
+                                {
+                                    <div class="spinner-border text-white" role="status" />
+                                }
+                                else
+                                {
+                                    <span>Confirm</span>
+                                }
+                            </button>
+                        }
+
+                        <button disabled="@isSubmitting" type="submit" class="btn btn-primary mt-2" style="width: 100px">
+                            @if (isSubmitting)
+                            {
+                                <div class="spinner-border text-white" role="status" />
+                            }
+                            else
+                            {
+                                <span>Submit</span>
+                            }
+                        </button>
+                    </div>
+                </div>
+            </div>
+    </form>
+}
+
+@code {
+    private RentalDto? rental;
+
+    // Validation props
+    private string? startDateInputErrorMessage;
+    private string? endDateInputErrorMessage;
+    private string? carInputErrorMessage;
+    private string? userIdInputErrorMessage;
+
+    private string StartDateInputClass => string.IsNullOrEmpty(startDateInputErrorMessage) ? "form-control" : "form-control is-invalid";
+    private string EndDateInputClass => string.IsNullOrEmpty(endDateInputErrorMessage) ? "form-control" : "form-control is-invalid";
+    private string CarInputClass => string.IsNullOrEmpty(carInputErrorMessage) ? "form-control" : "form-control is-invalid";
+    private string UserIdInputClass => string.IsNullOrEmpty(userIdInputErrorMessage) ? "form-control" : "form-control is-invalid";
+
+    private bool isSubmitting;
+
+    private string? currentStatus;
+    private string? currentStatusColor;
+
+    [Parameter]
+    public string? RentalId { get; set; }
+
+    // Selectors
+    private List<CarDto> cars = new List<CarDto>();
+    private IEnumerable<UserDto> users = new List<UserDto>();
+
+    // User props
+    private bool isAdmin = false;
+    private string userName = string.Empty;
+
+    private async Task Submit()
+    {   
+        if (isSubmitting) return;
+
+        isSubmitting = true;
+        var isFormValid = ValidateInputs();
+        if (!isFormValid)
+        {
+            isSubmitting = false;
+            return;
+        }
+        
+        var serverErrorMessage = await apiService.EditRentalAsync(rental!.Id, rental);
+        
+        // TODO: Do server error message handling
+        if (!string.IsNullOrEmpty(serverErrorMessage))
+        {
+            isSubmitting = false;
+            return;
+        }
+
+        isSubmitting = false;
+        if (isAdmin)
+        {
+            NavManager.NavigateTo("/rental-list");
+        }
+        else
+        {
+            NavManager.NavigateTo("/");
+        }
+    }
+
+    private async Task ChangeStatus(RentalStatus status) {
+        if (isSubmitting) return;
+
+        isSubmitting = true;
+        var refetchedRental = await apiService.GetRentalByIdAsync(rental!.Id);
+        if (refetchedRental == null)
+        {
+            isSubmitting = false;
+            return;
+        }
+
+        refetchedRental.Status = status;
+        if (status == RentalStatus.Completed)
+        {
+            refetchedRental.DropDate = DateTime.Now.AddHours(2);
+        }
+
+        var serverErrorMessage = await apiService.EditRentalAsync(rental!.Id, refetchedRental);
+
+        if (!string.IsNullOrEmpty(serverErrorMessage))
+        {
+            isSubmitting = false;
+            return;
+        }
+
+        isSubmitting = false;
+        if (isAdmin)
+        {
+            NavManager.NavigateTo("/rental-list");
+        }
+        else
+        {
+            NavManager.NavigateTo("/");
+        }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+        if (!authState.User.Identity?.IsAuthenticated ?? false)
+        {
+            NavManager.NavigateTo("/login");
+        }
+
+        isAdmin = authState.User.Claims.Any(c => c.Type == "IsAdmin" && c.Value == "True");
+        userName = authState.User.Identity?.Name ?? string.Empty;
+
+        if (int.TryParse(RentalId, out var id))
+        {
+            rental = await apiService.GetRentalByIdAsync(id);
+            if (rental == null)
+            {
+                NavManager.NavigateTo("/rentals-list");
+                return;
+            }
+
+            currentStatus = rental.Status.ToString();
+            currentStatusColor = rental.Status switch
+            {
+                RentalStatus.Confirmed => "text-success",
+                RentalStatus.Cancelled => "text-danger",
+                RentalStatus.Completed => "text-warning",
+                _ => "text-primary"
+            };
+
+            var carArray = await apiService.GetAllCarsAsync();
+            var usersArray = await apiService.GetUsersAsync();
+            var parsedCars = carArray?.ToList() ?? new List<CarDto>();
+            var parsedUsers = usersArray?.ToList() ?? new List<UserDto>();
+
+            if (parsedCars.Any() && parsedUsers.Any())
+            {
+                if (!isAdmin)
+                {
+                    parsedUsers = parsedUsers.Where(c => c.LegalName == userName).ToList();
+                }
+
+                cars = parsedCars;
+                users = parsedUsers;
+            }
+            else // If there are no cars go to the add car page
+            {
+                NavManager.NavigateTo("/add-car");
+            }
+        }
+        else
+        {
+            NavManager.NavigateTo("/rentals-list");
+        }
+    }
+
+     private bool ValidateInputs()
+    {
+        bool validated = true;
+        
+        // CAR VALIDATION
+        
+        if (string.IsNullOrEmpty(rental!.CarRegNumber))
+        {
+            carInputErrorMessage = "Please select a car.";
+            validated = false;
+        }
+        else
+        {
+            carInputErrorMessage = string.Empty;
+        }
+        
+        // DATE VALIDATION
+        if (string.IsNullOrEmpty(rental.StartDate.ToString())) {
+            startDateInputErrorMessage = "Please select a valid start date and time.";
+            validated = false;
+        }
+        else
+        {
+            startDateInputErrorMessage = string.Empty;
+        }
+        
+        if (string.IsNullOrEmpty(rental.EndDate.ToString())) {
+            endDateInputErrorMessage = "Please select a valid end date and time.";
+            validated = false;
+        }
+        else
+        {
+            endDateInputErrorMessage = string.Empty;
+        }
+
+        if (rental.StartDate > rental.EndDate)
+        {
+            startDateInputErrorMessage = "Start date must be earlier than end date.";
+            endDateInputErrorMessage = "Start date must be earlier than end date.";
+            validated = false;
+        }
+        
+        // USER VALIDATION
+        if (rental.UserId < 0) {
+            userIdInputErrorMessage = "Please provide a valid user ID.";
+            validated = false;
+        }
+        else
+        {
+            userIdInputErrorMessage = string.Empty;
+        }
+        
+        // RETURN
+        
+        return validated;
+    }
+}

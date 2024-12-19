@@ -1,19 +1,22 @@
 @page "/edit-car/{RegistrationNumber}"
+@using Microsoft.AspNetCore.Components.Authorization
 @using shared.Enums
 @using shared.Models
 @inject HttpClient Http
 @inject NavigationManager NavManager
+@inject AuthenticationStateProvider AuthStateProvider
 
 <PageTitle>Edit Car</PageTitle>
 
 @if(car == null) {
   <div class='spinner-border text-primary' role='status'></div>   
 }
+
 else {
     <form @onsubmit="Submit" class="row">
     <div class="form-group col-xs-12 col-md-6">
         <label for="regNumberInput">Registration Number</label>
-        <input @bind="regNumberInput" class="@(!string.IsNullOrEmpty(regNumberInputErrorMessage)? "is-invalid form-control" : "form-control")" placeholder=@RegistrationNumber id="regNumberInput">
+        <input disabled="@car.HasRentals" @bind="regNumberInput" class="@(!string.IsNullOrEmpty(regNumberInputErrorMessage)? "is-invalid form-control" : "form-control")" placeholder=@RegistrationNumber id="regNumberInput">
         <div class="@(!string.IsNullOrEmpty(regNumberInputErrorMessage)? "invalid-feedback" : "feedback")">
             @(regNumberInputErrorMessage ?? "This field should be unique for the whole system")
         </div>
@@ -107,14 +110,14 @@ else {
     private Make makeInput;
     private CarModel modelInput;
     private CarType carTypeInput;
-    private byte[] fileInput;
+    private byte[]? fileInput;
     private string? FileBase64;
     private string? carImageUrl;
     private bool isFileLoading;
-    private string regNumberInputErrorMessage;
+    private string? regNumberInputErrorMessage;
     private bool isSubmitting;
     private CarPostModel? car;
-    [Parameter] public string RegistrationNumber { get; set; }
+    [Parameter] public string? RegistrationNumber { get; set; }
 
     private async Task Submit()
     {   
@@ -128,22 +131,29 @@ else {
             return;
         }
 
-        car.RegistrationNumber = regNumberInput ?? string.Empty;
+        car!.RegistrationNumber = regNumberInput ?? string.Empty;
         car.Color = colorInput;
         car.Make = makeInput;
         car.Model = modelInput;
         car.Type = carTypeInput;
         car.ImageByteArr = fileInput ?? new byte[0];
         car.ShouldChangeFile = fileInput != null && fileInput.Length > 0;
+        car.OldRegistrationNumber = RegistrationNumber;
 
         var serverUrl = "http://localhost:5098";
-        await Http.PostAsJsonAsync($"{serverUrl}/cars", car);
+        await Http.PutAsJsonAsync($"{serverUrl}/cars/{RegistrationNumber}", car);
         isSubmitting = false;
         NavManager.NavigateTo("/cars-list?car-edited=true");
     }
 
     protected override async Task OnInitializedAsync()
     {
+        var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+        if (!authState.User.Identity?.IsAuthenticated ?? false)
+        {
+            NavManager.NavigateTo("/login");
+        }
+
         var serverUrl = "http://localhost:5098";
         
         var carResponse = await Http.GetFromJsonAsync<CarDto>($"{serverUrl}/cars/{RegistrationNumber}"); 
@@ -158,6 +168,7 @@ else {
             Make = carResponse.Make,
             Model = carResponse.Model,
             Type = carResponse.Type,
+            HasRentals = carResponse.HasRentals,
         };
 
         regNumberInput = carResponse.RegistrationNumber;

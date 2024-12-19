@@ -9,4 +9,6 @@ public class CarPostModel
     public Color Color { get; set; }
     public byte[] ImageByteArr { get; set; } = Array.Empty<byte>();
     public bool ShouldChangeFile { get; set; }
+    public string? OldRegistrationNumber { get; set; }
+    public bool HasRentals { get; set; }
 }
