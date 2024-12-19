@@ -11,11 +11,20 @@ public class SqlRentalDao implements RentalDao {
   private static SqlRentalDao instance;
   private final DatabaseConnector dbConnector = new DatabaseConnector();
 
+  /**
+   * Constructor for SqlRentalDao
+   * @throws SQLException
+   */
   public SqlRentalDao() throws SQLException
   {
     DriverManager.registerDriver(new org.postgresql.Driver());
   }
 
+  /**
+   * Get instance of SqlRentalDao
+   * @return
+   * @throws SQLException
+   */
   public static synchronized SqlRentalDao getInstance() throws SQLException
   {
     if (instance == null)
@@ -25,7 +34,15 @@ public class SqlRentalDao implements RentalDao {
     return instance;
   }
 
-
+  /**
+   * Create a new rental in the database
+   * @param regNum
+   * @param userId
+   * @param startDate
+   * @param endDate
+   * @return
+   * @throws SQLException
+   */
   @Override public Rental createRental(String regNum, int userId, Timestamp startDate, Timestamp endDate) throws SQLException
   {
 
@@ -64,6 +81,11 @@ public class SqlRentalDao implements RentalDao {
     }
   }
 
+  /**
+   * Update a rental in the database
+   * @param rental
+   * @throws SQLException
+   */
   @Override public void updateRental(Rental rental) throws SQLException
   {
     try(Connection connection = dbConnector.connect())
@@ -83,6 +105,12 @@ public class SqlRentalDao implements RentalDao {
 
   }
 
+  /**
+   * Get a rental by its id
+   * @param id
+   * @return
+   * @throws SQLException
+   */
   @Override public Rental getRentalById(int id) throws SQLException
   {
     try(Connection connection = dbConnector.connect())
@@ -109,6 +137,11 @@ public class SqlRentalDao implements RentalDao {
 
   }
 
+  /**
+   * Delete a rental by its id
+   * @param id
+   * @throws SQLException
+   */
   @Override public void deleteRentalById(long id) throws SQLException
   {
     try(Connection connection = dbConnector.connect())
@@ -120,6 +153,11 @@ public class SqlRentalDao implements RentalDao {
 
   }
 
+  /**
+   * Get all rentals in the database
+   * @return
+   * @throws SQLException
+   */
   @Override public List<Rental> getAllRentals() throws SQLException
   {
     try(Connection connection = dbConnector.connect())

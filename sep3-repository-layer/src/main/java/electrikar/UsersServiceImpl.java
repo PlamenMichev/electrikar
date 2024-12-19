@@ -6,6 +6,11 @@ import org.electrikar.grpc.*;
 
 public class UsersServiceImpl extends UsersServiceGrpc.UsersServiceImplBase
 {
+  /**
+   * Create a new user
+   * @param request
+   * @param responseObserver
+   */
   @Override public void createUser(
       org.electrikar.grpc.CreateUserRequest request,
       io.grpc.stub.StreamObserver<org.electrikar.grpc.CreateUserResponse> responseObserver)
@@ -39,6 +44,11 @@ public class UsersServiceImpl extends UsersServiceGrpc.UsersServiceImplBase
     }
   }
 
+  /**
+   * Update a user
+   * @param request
+   * @param responseObserver
+   */
   @Override public void updateUser(
       org.electrikar.grpc.UpdateUserRequest request,
       io.grpc.stub.StreamObserver<org.electrikar.grpc.UpdateUserResponse> responseObserver)
@@ -62,6 +72,11 @@ public class UsersServiceImpl extends UsersServiceGrpc.UsersServiceImplBase
     }
   }
 
+  /**
+   * Delete a user
+   * @param request
+   * @param responseObserver
+   */
   @Override public void deleteUser(
       org.electrikar.grpc.DeleteUserRequest request,
       io.grpc.stub.StreamObserver<org.electrikar.grpc.DeleteUserResponse> responseObserver)
@@ -82,6 +97,11 @@ public class UsersServiceImpl extends UsersServiceGrpc.UsersServiceImplBase
     }
   }
 
+  /**
+   * Get a user by its id
+   * @param request
+   * @param responseObserver
+   */
   @Override public void getUser(org.electrikar.grpc.GetUserRequest request,
       io.grpc.stub.StreamObserver<org.electrikar.grpc.GetUserResponse> responseObserver)
   {
@@ -105,6 +125,11 @@ public class UsersServiceImpl extends UsersServiceGrpc.UsersServiceImplBase
     }
   }
 
+  /**
+   * Get a list of all users
+   * @param request
+   * @param responseObserver
+   */
   public void getUsersList(Empty request, StreamObserver<UsersList> responseObserver)
   {
     try
