@@ -1,0 +1,47 @@
+@using shared.Models;
+@using shared.Enums;
+
+<p class="font-weight-bold text-success">@(price == 0 ? "" : $"Price for the car: {price} dkk")</p>
+
+@code
+ {
+    private decimal price;
+
+    [Parameter]
+    public DateTime StartDate { get; set; }
+
+    [Parameter]
+    public DateTime EndDate { get; set; }
+
+    [Parameter]
+    public CarDto Car { get; set; } = null;
+    protected override void OnInitialized()
+    {
+        price = CalculatePrice();
+    }
+
+    protected override void OnParametersSet()
+    {
+        price = CalculatePrice();
+    }
+
+    private decimal CalculatePrice()
+    {   
+        if (Car == null)
+        {
+            return 0;
+        }
+
+        var days = (EndDate - StartDate).Days;
+        var pricePerDay = Car.Make switch {
+            Make.Ford => 100,
+            Make.Tesla => 200,
+            Make.Renault => 150,
+            Make.Toyota => 120,
+            Make.Volkswagen => 90,
+            _ => 80
+        };
+
+        return days * pricePerDay;
+    }
+ }

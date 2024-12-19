@@ -176,6 +176,7 @@ public class SqlCarDao implements CarDao
                 boolean hasRentals = resultSet.getBoolean("has_rentals");
                 cars.add(new Car(reg, color, make, model, type, price, image, hasRentals));
             }
+
             return cars;
         }
     }

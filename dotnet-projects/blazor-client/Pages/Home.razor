@@ -1,7 +1,178 @@
 ﻿@page "/"
+@using Microsoft.AspNetCore.Components.Authorization;
+@using blazor_client.Contacts
+@using shared.Enums
+@using shared.Models
+@inject NavigationManager Navigation;
+@inject AuthenticationStateProvider AuthStateProvider
+@inject IApiService apiService
 
 <PageTitle>Home</PageTitle>
 
-<h1>Hello drivers!</h1>
+<h1>Hello, @userName</h1>
 
 Welcome to electrikar!
+
+@if (isAdmin)
+{
+    <p>You are an admin. You can add and edit cars and rentals!</p>
+}
+
+@if (!isAdmin)
+{
+      <table class="table">
+        <thead>
+            <tr>
+                <th>Car reg number</th>
+                <th>Start Date</th>
+                <th>End Date</th>
+                <th>Status</th>
+                <th>Dropoff Date</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var rental in rentals)
+            {
+                <tr>
+                    <td style="cursor: pointer; vertical-align: middle;" @onclick="() => NavigateToEditRental(rental.Id.ToString())">@rental.CarRegNumber</td>
+                    <td style="vertical-align: middle;">@rental.StartDate.ToString("dd-MM-yyyy HH:mm")</td>
+                    <td style="vertical-align: middle;">@rental.EndDate.ToString("dd-MM-yyyy HH:mm")</td>
+                    <td style="vertical-align: middle;">@rental.Status</td>
+                    <td style="vertical-align: middle;">@(rental.DropDate.ToUnixTimeMilliseconds() == 0 ? "None" : rental.DropDate.ToString("dd-MM-yyyy HH:mm"))</td>
+                    @if (rental.Status == RentalStatus.Pending)
+                    {
+                        <td style="vertical-align: middle;">
+                             <button disabled="@isSubmitting" @onclick="() => ChangeStatus(RentalStatus.Cancelled, rental.Id)" class="btn btn-danger mt-2 mr-2" style="width: 100px">
+                                @if (isSubmitting)
+                                {
+                                    <div class="spinner-border text-white" role="status" />
+                                }
+                                else
+                                {
+                                    <span>Cancel</span>
+                                }
+                            </button>
+                        </td>
+                    }
+                    else if (rental.Status == RentalStatus.Confirmed ) {
+                        <td style="vertical-align: middle;">
+                            <button disabled="@(isSubmitting || DateTime.Now < rental.EndDate)" 
+                                style="background-color: #ffc107; width: 100px;"
+                                @onclick="() => ChangeStatus(RentalStatus.Completed, rental.Id)"  
+                                class="btn btn-warning mt-2 mr-2">
+                                    @if (isSubmitting)
+                                    {
+                                        <div class="spinner-border text-white" role="status" />
+                                    }
+                                    else
+                                    {
+                                        <span>Drop Off</span>
+                                    }
+                            </button>
+                        </td>
+                    }
+                    else
+                    {
+                        <td></td>
+                    }
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private bool isAdmin = false;
+    private string userName = string.Empty;
+    private List<RentalDto> rentals = new List<RentalDto>();
+    private bool isSubmitting;
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+        
+        if (!authState.User.Identity?.IsAuthenticated ?? false)
+        {
+            Navigation.NavigateTo("/login");
+        }
+
+        isAdmin = authState.User.Claims.Any(c => c.Type == "IsAdmin" && c.Value == "True");
+        userName = authState.User.Identity?.Name ?? string.Empty;
+
+        if (!isAdmin)
+        {
+            var rentalsResponse = await apiService.GetAllRentalsAsync();
+            if (rentalsResponse != null)
+            {
+                rentals = rentalsResponse.Where(r => r.User?.LegalName == userName).ToList();
+            }
+        }
+
+        // Subscribe to authentication state changes
+        AuthStateProvider.AuthenticationStateChanged += OnAuthenticationStateChanged;
+    }
+    
+    private async void OnAuthenticationStateChanged(Task<AuthenticationState> task)
+    {
+        var authState = await task;
+        isAdmin = authState.User.Claims.Any(c => c.Type == "IsAdmin" && c.Value == "True");
+        userName = authState.User.Identity?.Name ?? string.Empty;
+
+         if (!isAdmin)
+        {
+            var rentalsResponse = await apiService.GetAllRentalsAsync();
+            if (rentalsResponse != null)
+            {
+                rentals = rentalsResponse.Where(r => r.User?.LegalName == userName).ToList();
+            }
+        }
+
+        // Notify the UI of the state change
+        StateHasChanged();
+    }
+
+     private async Task ChangeStatus(RentalStatus status, int rentalId) {
+        if (isSubmitting) return;
+
+        isSubmitting = true;
+        var refetchedRental = await apiService.GetRentalByIdAsync(rentalId);
+        if (refetchedRental == null)
+        {
+            isSubmitting = false;
+            return;
+        }
+
+        refetchedRental.Status = status;
+        if (status == RentalStatus.Completed)
+        {
+            refetchedRental.DropDate = DateTime.Now.AddHours(2);
+        }
+
+        var serverErrorMessage = await apiService.EditRentalAsync(rentalId, refetchedRental);
+
+        if (!string.IsNullOrEmpty(serverErrorMessage))
+        {
+            isSubmitting = false;
+            return;
+        }
+
+        isSubmitting = false;
+        if (isAdmin)
+        {
+            Navigation.NavigateTo("/rental-list");
+        }
+        else
+        {
+            Navigation.NavigateTo("/");
+            await OnInitializedAsync();
+        }
+    }
+
+    void NavigateToEditRental(string rentalId)
+    {
+        Navigation.NavigateTo($"/edit-rental/{rentalId}");
+    }
+
+}

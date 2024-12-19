@@ -44,7 +44,7 @@ public class CarsController : ControllerBase
         );
     }
 
-    [HttpPut]
+    [HttpPut("{regNumber}")]
     public async Task<ActionResult<Car>> Update(
         [FromRoute] string regNumber,
         [FromBody] CarPostModel car

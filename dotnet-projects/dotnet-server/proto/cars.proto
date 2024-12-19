@@ -10,6 +10,7 @@ message CreateCarRequest {
   int64 model = 4;
   int64 type = 5;
   string image = 6;
+  bool hasRentals = 7;
 }
 
 message CreateCarResponse {
@@ -20,6 +21,7 @@ message CreateCarResponse {
   int64 model = 5;
   int64 type = 6;
   string image = 7;
+  bool hasRentals = 8;
 }
 
 message CarsList {
@@ -37,6 +39,8 @@ message UpdateCarRequest {
   int64 model = 4;
   int64 type = 5;
   string image = 6;
+  bool hasRentals = 7;
+  string oldRegNumber = 8;
 }
 
 message UpdateCarResponse {
@@ -46,6 +50,7 @@ message UpdateCarResponse {
   int64 model = 4;
   int64 type = 5;
   string image = 6;
+  bool hasRentals = 7;
 }
 
 message GetCarRequest {
@@ -60,6 +65,7 @@ message GetCarResponse {
   int64 model =5;
   int64 type = 6;
   string image = 7;
+  bool hasRentals = 8;
 }
 
 message DeleteCarRequest {

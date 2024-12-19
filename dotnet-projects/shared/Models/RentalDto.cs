@@ -4,8 +4,8 @@ namespace shared.Models
 {
     public class RentalDto
     {
-        public long Id { get; set; }
-        public string CarRegNumber { get; set; }
+        public int Id { get; set; }
+        public required string CarRegNumber { get; set; }
         public int UserId { get; set; }
         public DateTimeOffset StartDate { get; set; }
         public DateTimeOffset EndDate { get; set; }
@@ -13,5 +13,6 @@ namespace shared.Models
         public RentalStatus Status { get; set; }
         public string? CustomerComment { get; set; }
         public string? OrganizerComment { get; set; }
+        public UserDto? User { get; set; }
     }
 }

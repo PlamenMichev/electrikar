@@ -1,10 +1,5 @@
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using dotnet_server.Contracts;
 using dotnet_server.grpc;
-using Google.Protobuf.WellKnownTypes;
-using Grpc.Net.Client;
 using RepositoryGrpcService;
 using shared.Enums;
 using shared.Models;
@@ -13,6 +8,13 @@ namespace dotnet_server.Services
 {
     public class RentalsService : IRentalService
     {
+        private readonly IUsersService usersService;
+
+        public RentalsService(IUsersService usersService)
+        {
+            this.usersService = usersService;
+        }
+
         public async Task<RentalDto> CreateRentalAsync(RentalDto rental)
         {
             var request = new CreateRentalRequest
@@ -31,12 +33,12 @@ namespace dotnet_server.Services
             var response = await client.createAsync(request);
             return new RentalDto
             {
-                Id = response.Id,
+                Id = (int)response.Id,
                 CarRegNumber = response.CarRegNumber,
                 UserId = (int)response.UserId,
-                StartDate = DateTimeOffset.FromUnixTimeSeconds(response.StartDate),
-                EndDate = DateTimeOffset.FromUnixTimeSeconds(response.EndDate),
-                DropDate = DateTimeOffset.FromUnixTimeSeconds(response.DropDate),
+                StartDate = DateTimeOffset.FromUnixTimeMilliseconds(response.StartDate),
+                EndDate = DateTimeOffset.FromUnixTimeMilliseconds(response.EndDate),
+                DropDate = DateTimeOffset.FromUnixTimeMilliseconds(response.DropDate),
                 Status = (RentalStatus)response.Status,
                 CustomerComment = null,
                 OrganizerComment = null
@@ -47,18 +49,22 @@ namespace dotnet_server.Services
         {
             var client = GrpcConnector.ConnectRentalServiceAsync();
             var response = await client.getAllRentalsAsync(new EmptyRental());
-            return response.Rentals.Select(r => new RentalDto
+
+            var result = response.Rentals.Select(r => new RentalDto
             {
-                Id = r.Id,
+                Id = (int)r.Id,
                 CarRegNumber = r.CarRegNumber,
                 UserId = (int)r.UserId,
-                StartDate = DateTimeOffset.FromUnixTimeSeconds(r.StartDate),
-                EndDate = DateTimeOffset.FromUnixTimeSeconds(r.EndDate),
-                DropDate = DateTimeOffset.FromUnixTimeSeconds(r.DropDate),
+                StartDate = DateTimeOffset.FromUnixTimeMilliseconds(r.StartDate),
+                EndDate = DateTimeOffset.FromUnixTimeMilliseconds(r.EndDate),
+                DropDate = DateTimeOffset.FromUnixTimeMilliseconds(r.DropDate),
                 Status = (RentalStatus)r.Status,
                 CustomerComment = r.CustomerComment,
-                OrganizerComment = r.OrganizerComment
+                OrganizerComment = r.OrganizerComment,
+                User = this.usersService.GetUserAsync((int)r.UserId).GetAwaiter().GetResult(),
             });
+
+            return result;
         }
 
         public async Task<RentalDto> GetRentalAsync(int id)
@@ -66,17 +72,19 @@ namespace dotnet_server.Services
             var request = new GetRentalRequest { Id = id };
             var client = GrpcConnector.ConnectRentalServiceAsync();
             var response = await client.getRentalAsync(request);
+
             return new RentalDto
             {
-                Id = response.Id,
+                Id = (int)response.Id,
                 CarRegNumber = response.CarRegNumber,
                 UserId = (int)response.UserId,
-                StartDate = DateTimeOffset.FromUnixTimeSeconds(response.StartDate),
-                EndDate = DateTimeOffset.FromUnixTimeSeconds(response.EndDate),
-                DropDate = DateTimeOffset.FromUnixTimeSeconds(response.DropDate),
+                StartDate = DateTimeOffset.FromUnixTimeMilliseconds(response.StartDate),
+                EndDate = DateTimeOffset.FromUnixTimeMilliseconds(response.EndDate),
+                DropDate = DateTimeOffset.FromUnixTimeMilliseconds(response.DropDate),
                 Status = (RentalStatus)response.Status,
                 CustomerComment = response.CustomerComment,
-                OrganizerComment = response.OrganizerComment
+                OrganizerComment = response.OrganizerComment,
+                User = await this.usersService.GetUserAsync((int)response.UserId),
             };
         }
 
@@ -87,9 +95,9 @@ namespace dotnet_server.Services
                 Id = id,
                 CarRegNumber = rental.CarRegNumber,
                 UserId = rental.UserId,
-                StartDate = rental.StartDate.ToUnixTimeSeconds(),
-                EndDate = rental.EndDate.ToUnixTimeSeconds(),
-                DropDate = rental.DropDate.ToUnixTimeSeconds(),
+                StartDate = rental.StartDate.ToUnixTimeMilliseconds(),
+                EndDate = rental.EndDate.ToUnixTimeMilliseconds(),
+                DropDate = rental.DropDate.ToUnixTimeMilliseconds(),
                 Status = (int)rental.Status,
                 CustomerComment = rental.CustomerComment,
                 OrganizerComment = rental.OrganizerComment
@@ -99,12 +107,12 @@ namespace dotnet_server.Services
             var response = await client.updateRentalAsync(request);
             return new RentalDto
             {
-                Id = response.Id,
+                Id = (int)response.Id,
                 CarRegNumber = response.CarRegNumber,
                 UserId = (int)response.UserId,
-                StartDate = DateTimeOffset.FromUnixTimeSeconds(response.StartDate),
-                EndDate = DateTimeOffset.FromUnixTimeSeconds(response.EndDate),
-                DropDate = DateTimeOffset.FromUnixTimeSeconds(response.DropDate),
+                StartDate = DateTimeOffset.FromUnixTimeMilliseconds(response.StartDate),
+                EndDate = DateTimeOffset.FromUnixTimeMilliseconds(response.EndDate),
+                DropDate = DateTimeOffset.FromUnixTimeMilliseconds(response.DropDate),
                 Status = (RentalStatus)response.Status,
                 CustomerComment = response.CustomerComment,
                 OrganizerComment = response.OrganizerComment

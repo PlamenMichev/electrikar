@@ -23,6 +23,7 @@ public class Main
             .forPort(8080)
             .addService(new CarsServiceImpl())
             .addService(new RentalsServiceImpl())
+            .addService(new UsersServiceImpl())
             .build();
 
 

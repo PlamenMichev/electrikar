@@ -1,6 +1,7 @@
 package electrikar;
 
 import electrikar.database.dao.SqlRentalDao;
+import electrikar.enums.RentalStatus;
 import io.grpc.stub.StreamObserver;
 import org.electrikar.grpc.*;
 
@@ -44,7 +45,16 @@ public class RentalsServiceImpl
   {
     try
     {
-      var rental = new Rental(request.getId(), request.getCarRegNumber(), (int)request.getUserId(), new Timestamp(request.getStartDate()), new Timestamp(request.getEndDate()));
+      var rental = new Rental(
+              request.getId(),
+              request.getCarRegNumber(),
+              (int)request.getUserId(),
+              new Timestamp(request.getStartDate()),
+              new Timestamp(request.getEndDate()),
+              new Timestamp(request.getDropDate()),
+              RentalStatus.valueOf((int )request.getStatus()),
+              request.getCustomerComment(),
+              request.getOrganizerComment());
       var rentalDao = SqlRentalDao.getInstance();
       rentalDao.updateRental(rental);
 
@@ -101,6 +111,10 @@ public class RentalsServiceImpl
             .setUserId(rental.getUserId())
             .setStartDate(rental.getStartDate().getTime())
             .setEndDate(rental.getEndDate().getTime())
+                .setStatus(rental.getStatus().ordinal())
+                .setDropDate(rental.getDropDate().getTime())
+                .setCustomerComment(rental.getCustomerComment() != null ? rental.getCustomerComment() : "")
+                .setOrganizerComment(rental.getOrganizerComment() != null ? rental.getOrganizerComment() : "")
             .build();
 
         response.addRentals(rentalProto);
@@ -135,6 +149,10 @@ public class RentalsServiceImpl
             .setUserId(rental.getUserId())
             .setStartDate(rental.getStartDate().getTime())
             .setEndDate(rental.getEndDate().getTime())
+                .setStatus(rental.getStatus().ordinal())
+                .setDropDate(rental.getDropDate().getTime())
+                .setCustomerComment(rental.getCustomerComment() != null ? rental.getCustomerComment() : "")
+                .setOrganizerComment(rental.getOrganizerComment() != null ? rental.getOrganizerComment() : "")
             .build();
         responseObserver.onNext(rentalProto);
       }

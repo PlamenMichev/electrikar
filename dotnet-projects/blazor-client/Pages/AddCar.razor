@@ -1,10 +1,13 @@
 @page "/add-car"
+@using Microsoft.AspNetCore.Components.Authorization
 @using blazor_client.Contacts
 @using shared.Enums
 @using shared.Models
 @inject HttpClient Http
 @inject NavigationManager NavManager
 @inject IApiService apiService;
+@inject AuthenticationStateProvider AuthStateProvider
+@inject NavigationManager NavManager
 
 <PageTitle>Add Car</PageTitle>
 
@@ -35,7 +38,7 @@
         <select @bind="makeInput" class="form-control" id="makeInput" required>
             @foreach (var make in Enum.GetValues(typeof(Make)))
             {
-            <option value="@make">@make</option>
+                <option value="@make">@make</option>
             }
         </select>
         <div class="invalid-feedback">
@@ -121,6 +124,15 @@ private bool isFileLoading;
 private string? regNumberInputErrorMessage;
 private bool isSubmitting;
 
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+        if (!authState.User.Identity?.IsAuthenticated ?? false)
+        {
+            NavManager.NavigateTo("/login");
+        }
+    }
+
 private async Task Submit()
 {
 if (isSubmitting) return;
@@ -141,7 +153,7 @@ Color = colorInput,
 Make = makeInput,
 Model = modelInput,
 Type = carTypeInput,
-ImageByteArr = fileInput,
+ImageByteArr = fileInput
 };
 
 var serverErrorMessage = await apiService.AddCarAsync(car);

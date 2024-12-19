@@ -1,13 +1,16 @@
 @page "/add-rental"
+@using Microsoft.AspNetCore.Components.Authorization
 @using blazor_client.Contacts
 @using shared.Enums
 @using shared.Models
 @using System;
 @using System.Collections.Generic;
 @using System.Linq;
+@using blazor_client.Components;
 @inject HttpClient Http
 @inject NavigationManager NavManager
 @inject IApiService apiService;
+@inject AuthenticationStateProvider AuthStateProvider
 
 <PageTitle>Add Car</PageTitle> 
 
@@ -51,15 +54,20 @@
 
     <div class="form-group col-xs-12 col-md-6">
         <label for="userIdInput">User</label>
-        <InputNumber @bind-Value="userIdInput"
-                     class="@UserIdInputClass"
-                     placeholder="Enter user id"
-                     id="userIdInput"
-                     required />
+      
+      <select @bind="userIdInput" class="@CarInputClass" id="carInput" required>
+            @foreach (var user in users)
+            {
+                <option value="@user.Id">@user.LegalName</option>
+            }
+        </select>
+        
         <div class="invalid-feedback">
             @(userIdInputErrorMessage ?? @userIdInputErrorMessage)
         </div>
     </div>
+
+    <RentalPriceLabel StartDate="@(startDateInput ?? DateTime.Now)" EndDate="@(endDateInput ?? DateTime.Now)" Car="@cars.FirstOrDefault(c => c.RegistrationNumber == carInput)" />
 
     <div class="row">
         <div class="col">
@@ -91,6 +99,7 @@
     private string carInput = string.Empty;
     private string? carInputErrorMessage;
     
+    private IEnumerable<UserDto> users = new List<UserDto>();
     private int? userIdInput;
     private string? userIdInputErrorMessage;
     
@@ -101,22 +110,48 @@
     private string CarInputClass => string.IsNullOrEmpty(carInputErrorMessage) ? "form-control" : "form-control is-invalid";
     private string UserIdInputClass => string.IsNullOrEmpty(userIdInputErrorMessage) ? "form-control" : "form-control is-invalid";
     
+    // User props
+    private bool isAdmin = false;
+    private string userName = string.Empty;
+
     protected override async Task OnInitializedAsync()
     {
-        var carArray = await apiService.GetAllCarsAsync();
-        var parsedCars = carArray?.ToList() ?? new List<CarDto>();
-        
-        if (parsedCars.Any())
+        var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+        if (!authState.User.Identity?.IsAuthenticated ?? false)
         {
+            NavManager.NavigateTo("/login");
+        }
+
+        isAdmin = authState.User.Claims.Any(c => c.Type == "IsAdmin" && c.Value == "True");
+        userName = authState.User.Identity?.Name ?? string.Empty;
+
+        var carArray = await apiService.GetAllCarsAsync();
+        var usersArray = await apiService.GetUsersAsync();
+        var parsedCars = carArray?.ToList() ?? new List<CarDto>();
+        var parsedUsers = usersArray?.ToList() ?? new List<UserDto>();
+
+        if (parsedCars.Any() && parsedUsers.Any())
+        {
+            if (!isAdmin)
+            {
+                parsedUsers = parsedUsers.Where(c => c.LegalName == userName).ToList();
+            }
+
             cars = parsedCars;
             carInput = cars.First().RegistrationNumber;
+            users = parsedUsers;
+            userIdInput = users.First().Id;
         }
         else // If there are no cars go to the add car page
         {
-            NavManager.NavigateTo("/add-car");
+            if (isAdmin)
+            {
+                NavManager.NavigateTo("/add-car");
+            }
+            else {
+                NavManager.NavigateTo("/");
+            }
         }
-        
-        // Get users
     }
     
     private async Task Submit()
@@ -149,8 +184,16 @@
         }
 
         isSubmitting = false;
-        NavManager.NavigateTo("/rental-list?rental-added=true");
+        if (isAdmin)
+        {
+            NavManager.NavigateTo("/rental-list?rental-added=true");
+        }
+        else
+        {
+            NavManager.NavigateTo("/");
+        }
     }
+
 
     private bool ValidateInputs()
     {
@@ -195,21 +238,9 @@
             validated = false;
         }
 
-        if (startDateInput < DateTime.Now.AddMinutes(15)) // This is current time + 15 minutes
-        {
-            startDateInputErrorMessage = "Start date is too early.";
-            validated = false;
-        }
-        
         // USER VALIDATION
-        
         if (userIdInput < 0 || userIdInput == null) {
             userIdInputErrorMessage = "Please provide a valid user ID.";
-            validated = false;
-        }
-        else if (false) // TODO: Make sure user exists
-        {
-            userIdInputErrorMessage = "This user does not exist";
             validated = false;
         }
         else
