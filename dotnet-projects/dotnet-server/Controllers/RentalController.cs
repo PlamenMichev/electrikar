@@ -10,7 +10,6 @@ public class RentalController : ControllerBase
 {
     private readonly IRentalService _rentalService;
 
-    //TODO: make check if the logic is correct in this class because I might be dumb
     public RentalController(IRentalService rentalService)
     {
         _rentalService = rentalService;
@@ -42,13 +41,17 @@ public class RentalController : ControllerBase
     }
 
     [HttpPut("{id}")]
-    public async Task<ActionResult<RentalDto>> Update([FromRoute] int id, [FromBody] RentalDto rental) //TODO: Task<ActionResult<CarDto>> Shouldnt it be RentalDto?? -Mario
+    public async Task<ActionResult<RentalDto>> Update(
+        [FromRoute] int id,
+        [FromBody] RentalDto rental
+    )
     {
         var response = await _rentalService.UpdateRentalAsync(id, rental);
         if (response == null)
         {
             return NotFound();
         }
+
         return Ok(response);
     }
 
@@ -60,6 +63,7 @@ public class RentalController : ControllerBase
         {
             return NotFound();
         }
+
         await _rentalService.DeleteRentalAsync(id);
         return NoContent();
     }

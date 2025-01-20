@@ -32,15 +32,16 @@ public class SqlTest
 
   @BeforeEach void setUp()
   {
-      sqlCarDao = Mockito.mock(SqlCarDao.class);
-     sqlUserDao = Mockito.mock(SqlUserDao.class);
-     sqlRentalDao = Mockito.mock(SqlRentalDao.class);
+    sqlCarDao = Mockito.mock(SqlCarDao.class);
+    sqlUserDao = Mockito.mock(SqlUserDao.class);
+    sqlRentalDao = Mockito.mock(SqlRentalDao.class);
   }
 
   @Test void testCreateCar() throws SQLException
   {
     var car = new Car("1234", CarColor.valueOf(1), CarMake.valueOf(1),
         CarModel.valueOf(2), CarType.SEDAN, 0, "image", false);
+
     var newCar = sqlCarDao.createCar(car.getReg_number(), car.getColor(),
         car.getMake(), car.getModel(), car.getType(), car.getPrice(),
         car.getImage(), car.checkRent());

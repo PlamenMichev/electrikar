@@ -21,13 +21,6 @@ public class CarsServiceImpl extends CarsServiceGrpc.CarsServiceImplBase {
     @Override
     public void create(
             CreateCarRequest request, StreamObserver<CreateCarResponse> responseObserver) {
-        System.out.println("Received request: " + request.getRegNumber());
-        System.out.println("Received request: " + request.getColor());
-        System.out.println("Received request: " + request.getMake());
-        System.out.println("Received request: " + request.getModel());
-        System.out.println("Received request: " + request.getType());
-        System.out.println("Received request: " + request.getImage());
-
         try {
             var car = new Car(request.getRegNumber(),
                     CarColor.valueOf((int)request.getColor()),
@@ -36,9 +29,20 @@ public class CarsServiceImpl extends CarsServiceGrpc.CarsServiceImplBase {
                     CarType.valueOf((int)request.getType()),
                     0, request.getImage(), false);
             var carDao = SqlCarDao.getInstance();
-            var newCar = carDao.createCar(car.getReg_number(), car.getColor(), car.getMake(), car.getModel(), car.getType(), car.getPrice(), car.getImage(), car.checkRent());
+            var newCar = carDao
+                    .createCar(car.getReg_number(),
+                            car.getColor(),
+                            car.getMake(),
+                            car.getModel(),
+                            car.getType(),
+                            car.getPrice(),
+                            car.getImage(),
+                            car.checkRent());
 
-            CreateCarResponse response = CreateCarResponse.newBuilder().setRegNumber(newCar.getReg_number()).build();
+            CreateCarResponse response = CreateCarResponse
+                    .newBuilder()
+                    .setRegNumber(newCar.getReg_number())
+                    .build();
             responseObserver.onNext(response);
             responseObserver.onCompleted();
         } catch (Exception e) {

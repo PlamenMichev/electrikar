@@ -51,12 +51,21 @@ public class SqlCarDao implements CarDao
    * @return
    * @throws SQLException
    */
-  @Override public Car createCar(String regNum, CarColor color,
-                                 CarMake make, CarModel model, CarType type, int price, String image, boolean hasRentals) throws SQLException
+  @Override public Car createCar(String regNum,
+                                 CarColor color,
+                                 CarMake make,
+                                 CarModel model,
+                                 CarType type,
+                                 int price,
+                                 String image,
+                                 boolean hasRentals) throws SQLException
   {
     try(Connection connection = dbConnector.connect())
     {
-      PreparedStatement statement = connection.prepareStatement("INSERT INTO \"Car\"(reg_num, color,  make, model, type, price, image) VALUES (?, ?, ?, ?, ?, ?, ?)");
+      PreparedStatement statement = connection
+              .prepareStatement("INSERT INTO " +
+                      "\"Car\"(reg_num, color,  make, model, type, price, image) " +
+                      "VALUES (?, ?, ?, ?, ?, ?, ?)");
       statement.setString(1, regNum);
       statement.setInt(2, color.ordinal());
       statement.setInt(3, make.ordinal());
@@ -102,7 +111,8 @@ public class SqlCarDao implements CarDao
   {
     try(Connection connection = dbConnector.connect())
     {
-      PreparedStatement statement = connection.prepareStatement("SELECT reg_num, color, make, model, type, price, image,  "
+      PreparedStatement statement = connection
+              .prepareStatement("SELECT reg_num, color, make, model, type, price, image,  "
           + "CASE WHEN COUNT(R.car_reg) > 0 THEN TRUE ELSE FALSE END AS has_rentals "
           + "FROM \"Car\" "
           + "LEFT JOIN \"Rental\" R ON R.car_reg = reg_num "

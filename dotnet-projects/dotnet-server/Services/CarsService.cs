@@ -1,7 +1,5 @@
 using dotnet_server.Contracts;
 using dotnet_server.grpc;
-using Google.Protobuf;
-using Grpc.Net.Client;
 using RepositoryGrpcService;
 using shared.Enums;
 using shared.Models;

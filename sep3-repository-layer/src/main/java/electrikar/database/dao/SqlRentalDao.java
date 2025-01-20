@@ -102,7 +102,6 @@ public class SqlRentalDao implements RentalDao {
       statement.setInt(9, (int) rental.getId());
       statement.executeUpdate();
     }
-
   }
 
   /**

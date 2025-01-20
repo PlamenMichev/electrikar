@@ -105,7 +105,10 @@
     
     private bool isSubmitting;
 
-    private string StartDateInputClass => string.IsNullOrEmpty(startDateInputErrorMessage) ? "form-control" : "form-control is-invalid";
+    private string StartDateInputClass => string.IsNullOrEmpty(startDateInputErrorMessage) 
+        ? "form-control" 
+        : "form-control is-invalid";
+        
     private string EndDateInputClass => string.IsNullOrEmpty(endDateInputErrorMessage) ? "form-control" : "form-control is-invalid";
     private string CarInputClass => string.IsNullOrEmpty(carInputErrorMessage) ? "form-control" : "form-control is-invalid";
     private string UserIdInputClass => string.IsNullOrEmpty(userIdInputErrorMessage) ? "form-control" : "form-control is-invalid";

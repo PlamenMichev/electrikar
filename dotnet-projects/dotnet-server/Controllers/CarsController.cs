@@ -23,6 +23,7 @@ public class CarsController : ControllerBase
         {
             return NotFound();
         }
+
         return Ok(car);
     }
 

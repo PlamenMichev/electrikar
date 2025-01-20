@@ -52,7 +52,8 @@ else
                         <td>@car.Type</td>
                         <td>@car.Color</td>
                         <td>
-                            <button disabled="@car.HasRentals" @onclick="() => DeleteCarAsync(car.RegistrationNumber)" class="btn btn-danger">Delete</button>
+                            <button disabled="@car.HasRentals" 
+                            @onclick="() => DeleteCarAsync(car.RegistrationNumber)" class="btn btn-danger">Delete</button>
                         </td>
                 </tr>
             }

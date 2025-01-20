@@ -81,12 +81,94 @@ Welcome to electrikar!
         </tbody>
     </table>
 }
+else {
+<div class="container mt-5">
+  <div class="row">
+    
+    <div class="col-md-4">
+      <div class="card text-white bg-primary mb-3">
+        <div class="card-header">All Rentals</div>
+        <div class="card-body">
+          <h5 class="card-title">@rentals.Count</h5>
+        </div>
+      </div>
+    </div>
+    
+    <div class="col-md-2">
+      <div class="card text-white bg-warning mb-3">
+        <div class="card-header">Pending Rentals</div>
+        <div class="card-body">
+          <h5 class="card-title">@PendingRentals</h5>
+        </div>
+      </div>
+    </div>
+    
+    <div class="col-md-2">
+      <div class="card text-white bg-danger mb-3">
+        <div class="card-header">Cancelled Rentals</div>
+        <div class="card-body">
+          <h5 class="card-title">@CancelledRentals</h5>
+        </div>
+      </div>
+    </div>
+    
+    <div class="col-md-2">
+      <div class="card text-white bg-secondary mb-3">
+        <div class="card-header">Confirmed Rentals</div>
+        <div class="card-body">
+          <h5 class="card-title">@ConfirmedRentals</h5>
+        </div>
+      </div>
+    </div>
+    
+    <div class="col-md-2">
+      <div class="card text-white bg-success mb-3">
+        <div class="card-header">Completed Rentals</div>
+        <div class="card-body">
+          <h5 class="card-title">@CompletedRentals</h5>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <!-- Total Users -->
+    <div class="col-md-6">
+      <div class="card text-white bg-info mb-3">
+        <div class="card-header">Customers</div>
+        <div class="card-body">
+          <h5 class="card-title">@CustomersCount</h5>
+        </div>
+      </div>
+    </div>
+    <!-- Total Admins -->
+    <div class="col-md-6">
+      <div class="card text-white bg-secondary mb-3">
+        <div class="card-header">Admins</div>
+        <div class="card-body">
+          <h5 class="card-title">@AdminsCount</h5>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+}
 
 @code {
     private bool isAdmin = false;
     private string userName = string.Empty;
     private List<RentalDto> rentals = new List<RentalDto>();
     private bool isSubmitting;
+    private List<UserDto> users = new List<UserDto>();
+
+    private int TotalRentals => rentals.Count;
+    private int CancelledRentals => rentals.Count(r => r.Status == RentalStatus.Cancelled);
+    private int CompletedRentals => rentals.Count(r => r.Status == RentalStatus.Completed);
+    private int PendingRentals => rentals.Count(r => r.Status == RentalStatus.Pending);
+    private int ConfirmedRentals => rentals.Count(r => r.Status == RentalStatus.Confirmed);
+
+    private int CustomersCount => users.Count(c => !c.IsAdmin);
+    private int AdminsCount => users.Count(c => c.IsAdmin);
 
 
     protected override async Task OnInitializedAsync()
@@ -101,12 +183,26 @@ Welcome to electrikar!
         isAdmin = authState.User.Claims.Any(c => c.Type == "IsAdmin" && c.Value == "True");
         userName = authState.User.Identity?.Name ?? string.Empty;
 
+        var rentalsResponse = await apiService.GetAllRentalsAsync();
         if (!isAdmin)
         {
-            var rentalsResponse = await apiService.GetAllRentalsAsync();
             if (rentalsResponse != null)
             {
                 rentals = rentalsResponse.Where(r => r.User?.LegalName == userName).ToList();
+            }
+        }
+        else
+        {
+            if (rentalsResponse != null)
+            {
+                rentals = rentalsResponse.ToList();
+            }
+
+            // Fetch the users
+            var usersResponse = await apiService.GetUsersAsync();
+            if (usersResponse != null)
+            {
+               users = usersResponse.ToList();
             }
         }
 
